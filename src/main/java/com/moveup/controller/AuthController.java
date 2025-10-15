@@ -178,25 +178,4 @@ public class AuthController {
                     .body(Map.of("error", "Token di refresh non valido"));
         }
     }
-    
-    // Register with complete onboarding data
-    @PostMapping("/register-with-onboarding")
-    public ResponseEntity<?> registerWithOnboarding(@Valid @RequestBody RegisterWithOnboardingDTO dto) {
-        try {
-            User user = userService.createUserWithOnboarding(dto);
-            double profileCompletion = userService.calculateProfileCompletion(user);
-            
-            return ResponseEntity.ok(Map.of(
-                "message", "Registrazione completata con successo",
-                "user", user,
-                "profileCompletion", profileCompletion
-            ));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Errore durante la registrazione"));
-        }
-    }
 }

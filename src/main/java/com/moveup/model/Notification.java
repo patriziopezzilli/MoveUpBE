@@ -134,7 +134,7 @@ public class Notification {
     }
 }
 
-enum NotificationType {
+public enum NotificationType {
     BOOKING_CONFIRMATION("Conferma Prenotazione"),
     BOOKING_REMINDER("Promemoria Prenotazione"),
     BOOKING_CANCELLED("Prenotazione Cancellata"),
@@ -160,7 +160,7 @@ enum NotificationType {
     }
 }
 
-enum NotificationPriority {
+public enum NotificationPriority {
     LOW("Bassa"),
     MEDIUM("Media"),
     HIGH("Alta"),

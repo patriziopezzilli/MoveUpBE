@@ -130,7 +130,7 @@ enum ReviewType {
 }
 
 // Embedded classes
-class ReviewDetails {
+public static class ReviewDetails {
     private List<String> highlights;
     private int punctualityRating;
     private int professionalismRating;

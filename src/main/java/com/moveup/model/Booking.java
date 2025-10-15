@@ -189,7 +189,7 @@ public class Booking {
     }
 }
 
-enum BookingStatus {
+public enum BookingStatus {
     PENDING("In attesa"),
     CONFIRMED("Confermata"),
     COMPLETED("Completata"),
@@ -207,7 +207,7 @@ enum BookingStatus {
     }
 }
 
-enum PaymentStatus {
+public enum PaymentStatus {
     PENDING("In elaborazione"),
     AUTHORIZED("Autorizzato"),
     CAPTURED("Completato"),
@@ -226,7 +226,7 @@ enum PaymentStatus {
 }
 
 // Embedded classes
-class PaymentInfo {
+public static class PaymentInfo {
     private String stripePaymentIntentId;
     private String stripeChargeId;
     private String refundId;
@@ -253,7 +253,7 @@ class PaymentInfo {
     public void setProcessingFee(double processingFee) { this.processingFee = processingFee; }
 }
 
-class CancellationInfo {
+public static class CancellationInfo {
     private String cancelledBy;
     private LocalDateTime cancelledAt;
     private String reason;
@@ -283,7 +283,7 @@ class CancellationInfo {
 }
 
 // Apple Wallet Pass Info
-class WalletPassInfo {
+public static class WalletPassInfo {
     private String serialNumber;
     private boolean passAdded;
     private java.util.List<String> deviceTokens = new java.util.ArrayList<>();
@@ -305,7 +305,7 @@ class WalletPassInfo {
 }
 
 // Live Activity Info
-class LiveActivityInfo {
+public static class LiveActivityInfo {
     private String activityId;
     private String pushToken;
     private LocalDateTime startedAt;
@@ -331,7 +331,7 @@ class LiveActivityInfo {
 }
 
 // QR Code Check-in Info
-class CheckInInfo {
+public static class CheckInInfo {
     private LocalDateTime checkedInAt;
     private boolean scannedQR;
     private GeoLocation location;
@@ -368,4 +368,103 @@ class GeoLocation {
     
     public double[] getCoordinates() { return coordinates; }
     public void setCoordinates(double[] coordinates) { this.coordinates = coordinates; }
+}
+}
+
+// Enums - DEVONO essere public
+public enum BookingStatus {
+    PENDING,
+    CONFIRMED,
+    COMPLETED,
+    CANCELLED,
+    NO_SHOW
+}
+
+public enum PaymentStatus {
+    PENDING,
+    AUTHORIZED,
+    CAPTURED,
+    REFUNDED,
+    FAILED
+}
+
+// Classi inner - DEVONO essere public static
+public static class PaymentInfo {
+    private String stripePaymentIntentId;
+    private String stripeCustomerId;
+    private Double amount;
+    private String currency;
+    private String paymentMethod;
+
+    public String getStripePaymentIntentId() { return stripePaymentIntentId; }
+    public void setStripePaymentIntentId(String stripePaymentIntentId) { this.stripePaymentIntentId = stripePaymentIntentId; }
+    public String getStripeCustomerId() { return stripeCustomerId; }
+    public void setStripeCustomerId(String stripeCustomerId) { this.stripeCustomerId = stripeCustomerId; }
+    public Double getAmount() { return amount; }
+    public void setAmount(Double amount) { this.amount = amount; }
+    public String getCurrency() { return currency; }
+    public void setCurrency(String currency) { this.currency = currency; }
+    public String getPaymentMethod() { return paymentMethod; }
+    public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
+}
+
+public static class CancellationInfo {
+    private String reason;
+    private LocalDateTime cancelledAt;
+    private String cancelledBy;
+    private boolean refundIssued;
+
+    public String getReason() { return reason; }
+    public void setReason(String reason) { this.reason = reason; }
+    public LocalDateTime getCancelledAt() { return cancelledAt; }
+    public void setCancelledAt(LocalDateTime cancelledAt) { this.cancelledAt = cancelledAt; }
+    public String getCancelledBy() { return cancelledBy; }
+    public void setCancelledBy(String cancelledBy) { this.cancelledBy = cancelledBy; }
+    public boolean isRefundIssued() { return refundIssued; }
+    public void setRefundIssued(boolean refundIssued) { this.refundIssued = refundIssued; }
+}
+
+public static class WalletPassInfo {
+    private String passId;
+    private String passUrl;
+    private boolean added;
+
+    public String getPassId() { return passId; }
+    public void setPassId(String passId) { this.passId = passId; }
+    public String getPassUrl() { return passUrl; }
+    public void setPassUrl(String passUrl) { this.passUrl = passUrl; }
+    public boolean isAdded() { return added; }
+    public void setAdded(boolean added) { this.added = added; }
+}
+
+public static class LiveActivityInfo {
+    private String activityId;
+    private boolean active;
+
+    public String getActivityId() { return activityId; }
+    public void setActivityId(String activityId) { this.activityId = activityId; }
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
+}
+
+public static class CheckInInfo {
+    private boolean studentCheckedIn;
+    private boolean instructorCheckedIn;
+    private LocalDateTime studentCheckInTime;
+    private LocalDateTime instructorCheckInTime;
+    private GeoLocation studentCheckInLocation;
+    private GeoLocation instructorCheckInLocation;
+
+    public boolean isStudentCheckedIn() { return studentCheckedIn; }
+    public void setStudentCheckedIn(boolean studentCheckedIn) { this.studentCheckedIn = studentCheckedIn; }
+    public boolean isInstructorCheckedIn() { return instructorCheckedIn; }
+    public void setInstructorCheckedIn(boolean instructorCheckedIn) { this.instructorCheckedIn = instructorCheckedIn; }
+    public LocalDateTime getStudentCheckInTime() { return studentCheckInTime; }
+    public void setStudentCheckInTime(LocalDateTime studentCheckInTime) { this.studentCheckInTime = studentCheckInTime; }
+    public LocalDateTime getInstructorCheckInTime() { return instructorCheckInTime; }
+    public void setInstructorCheckInTime(LocalDateTime instructorCheckInTime) { this.instructorCheckInTime = instructorCheckInTime; }
+    public GeoLocation getStudentCheckInLocation() { return studentCheckInLocation; }
+    public void setStudentCheckInLocation(GeoLocation studentCheckInLocation) { this.studentCheckInLocation = studentCheckInLocation; }
+    public GeoLocation getInstructorCheckInLocation() { return instructorCheckInLocation; }
+    public void setInstructorCheckInLocation(GeoLocation instructorCheckInLocation) { this.instructorCheckInLocation = instructorCheckInLocation; }
 }

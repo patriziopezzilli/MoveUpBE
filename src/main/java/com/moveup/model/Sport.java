@@ -83,7 +83,7 @@ public class Sport {
     }
 }
 
-enum SportCategory {
+public enum SportCategory {
     RACQUET("Racchette"),
     TEAM("Sport di squadra"), 
     WATER("Sport acquatici"),

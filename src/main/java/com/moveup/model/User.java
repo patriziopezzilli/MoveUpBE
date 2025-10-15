@@ -43,6 +43,8 @@ public class User {
     private UserType userType;
     
     private boolean isVerified = false;
+    private String verificationToken;
+    private boolean isActive = true;
     private int points = 0;
     private List<String> badges = new ArrayList<>();
     
@@ -115,6 +117,12 @@ public class User {
     
     public boolean isVerified() { return isVerified; }
     public void setVerified(boolean verified) { isVerified = verified; }
+    
+    public String getVerificationToken() { return verificationToken; }
+    public void setVerificationToken(String verificationToken) { this.verificationToken = verificationToken; }
+    
+    public boolean isActive() { return isActive; }
+    public void setActive(boolean active) { isActive = active; }
     
     public int getPoints() { return points; }
     public void setPoints(int points) { this.points = points; }
@@ -191,16 +199,16 @@ public class User {
 }
 
 // Enum classes
-enum UserType {
+public enum UserType {
     USER, INSTRUCTOR, ADMIN
 }
 
-enum SkillLevel {
+public enum SkillLevel {
     BEGINNER, INTERMEDIATE, ADVANCED, PROFESSIONAL
 }
 
 // Embedded classes
-class Location {
+public static class Location {
     private double latitude;
     private double longitude;
     private String address;
