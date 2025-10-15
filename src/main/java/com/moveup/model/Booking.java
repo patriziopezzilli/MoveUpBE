@@ -370,3 +370,4 @@ class GeoLocation {
     public void setCoordinates(double[] coordinates) { this.coordinates = coordinates; }
 }
 }
+}
