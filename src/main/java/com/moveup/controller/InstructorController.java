@@ -42,8 +42,8 @@ public class InstructorController {
         return instructorService.getInstructorById(instructorId)
                 .map(instructor -> {
                     // Remove sensitive information
-                    instructor.setPassword(null);
-                    instructor.setVerificationToken(null);
+                    // instructor.setPassword(null);  // Password belongs to User, not Instructor
+                    // instructor.setVerificationToken(null);  // Verification token belongs to User
                     return ResponseEntity.ok(instructor);
                 })
                 .orElse(ResponseEntity.notFound().build());
@@ -55,7 +55,7 @@ public class InstructorController {
                                                             @Valid @RequestBody Instructor updatedInstructor) {
         try {
             Instructor instructor = instructorService.updateInstructor(instructorId, updatedInstructor);
-            instructor.setPassword(null);
+            // instructor.setPassword(null);  // Password belongs to User, not Instructor
             return ResponseEntity.ok(instructor);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();

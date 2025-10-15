@@ -44,7 +44,11 @@ public class User {
     
     private boolean isVerified = false;
     private String verificationToken;
+    private LocalDateTime verifiedAt;
     private boolean isActive = true;
+    private LocalDateTime deactivatedAt;
+    private String resetPasswordToken;
+    private LocalDateTime resetPasswordTokenExpiry;
     private int points = 0;
     private List<String> badges = new ArrayList<>();
     
@@ -67,6 +71,7 @@ public class User {
     
     private Location location;
     private UserPreferences preferences = new UserPreferences();
+    private GameStatus gameStatus = new GameStatus();
     
     // Instructor-specific fields
     private List<String> certifications = new ArrayList<>();
@@ -121,8 +126,20 @@ public class User {
     public String getVerificationToken() { return verificationToken; }
     public void setVerificationToken(String verificationToken) { this.verificationToken = verificationToken; }
     
+    public LocalDateTime getVerifiedAt() { return verifiedAt; }
+    public void setVerifiedAt(LocalDateTime verifiedAt) { this.verifiedAt = verifiedAt; }
+    
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { isActive = active; }
+    
+    public LocalDateTime getDeactivatedAt() { return deactivatedAt; }
+    public void setDeactivatedAt(LocalDateTime deactivatedAt) { this.deactivatedAt = deactivatedAt; }
+    
+    public String getResetPasswordToken() { return resetPasswordToken; }
+    public void setResetPasswordToken(String resetPasswordToken) { this.resetPasswordToken = resetPasswordToken; }
+    
+    public LocalDateTime getResetPasswordTokenExpiry() { return resetPasswordTokenExpiry; }
+    public void setResetPasswordTokenExpiry(LocalDateTime resetPasswordTokenExpiry) { this.resetPasswordTokenExpiry = resetPasswordTokenExpiry; }
     
     public int getPoints() { return points; }
     public void setPoints(int points) { this.points = points; }
@@ -176,6 +193,9 @@ public class User {
     public UserPreferences getPreferences() { return preferences; }
     public void setPreferences(UserPreferences preferences) { this.preferences = preferences; }
     
+    public GameStatus getGameStatus() { return gameStatus; }
+    public void setGameStatus(GameStatus gameStatus) { this.gameStatus = gameStatus; }
+    
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     
@@ -191,10 +211,37 @@ public class User {
         this.points += pointsToAdd;
     }
     
+    public void deductPoints(int pointsToDeduct) {
+        this.points -= pointsToDeduct;
+        if (this.points < 0) this.points = 0;
+    }
+    
     public void addBadge(String badgeId) {
         if (!badges.contains(badgeId)) {
             badges.add(badgeId);
         }
+    }
+    
+    public boolean hasBadge(String badgeId) {
+        return badges.contains(badgeId);
+    }
+    
+    public void addExperience(int experiencePoints) {
+        if (gameStatus != null) {
+            gameStatus.setExperiencePoints(gameStatus.getExperiencePoints() + experiencePoints);
+        }
+    }
+    
+    // Convenience methods for location
+    public String getAddress() {
+        return location != null ? location.getAddress() : null;
+    }
+    
+    public void setAddress(String address) {
+        if (location == null) {
+            location = new Location();
+        }
+        location.setAddress(address);
     }
 }
 
@@ -282,4 +329,40 @@ class UserPreferences {
     
     public String getLanguage() { return language; }
     public void setLanguage(String language) { this.language = language; }
+}
+
+public static class GameStatus {
+    private int totalPoints = 0;
+    private int level = 1;
+    private List<String> badges = new ArrayList<>();
+    private int totalLessons = 0;
+    private int totalReviews = 0;
+    private double averageRating = 0.0;
+    private int experiencePoints = 0;
+    private List<String> redeemedRewards = new ArrayList<>();
+    
+    // Getters and Setters
+    public int getTotalPoints() { return totalPoints; }
+    public void setTotalPoints(int totalPoints) { this.totalPoints = totalPoints; }
+    
+    public int getLevel() { return level; }
+    public void setLevel(int level) { this.level = level; }
+    
+    public List<String> getBadges() { return badges; }
+    public void setBadges(List<String> badges) { this.badges = badges; }
+    
+    public int getTotalLessons() { return totalLessons; }
+    public void setTotalLessons(int totalLessons) { this.totalLessons = totalLessons; }
+    
+    public int getTotalReviews() { return totalReviews; }
+    public void setTotalReviews(int totalReviews) { this.totalReviews = totalReviews; }
+    
+    public double getAverageRating() { return averageRating; }
+    public void setAverageRating(double averageRating) { this.averageRating = averageRating; }
+    
+    public int getExperiencePoints() { return experiencePoints; }
+    public void setExperiencePoints(int experiencePoints) { this.experiencePoints = experiencePoints; }
+    
+    public List<String> getRedeemedRewards() { return redeemedRewards; }
+    public void setRedeemedRewards(List<String> redeemedRewards) { this.redeemedRewards = redeemedRewards; }
 }

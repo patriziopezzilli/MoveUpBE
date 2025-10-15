@@ -27,6 +27,12 @@ public class Sport {
     @NotBlank
     private String iconName;
     
+    private String iconUrl;
+    private String difficultyLevel;  // "EASY", "MEDIUM", "HARD"
+    private List<String> characteristics = new ArrayList<>();
+    private List<String> equipment = new ArrayList<>();
+    private int popularity = 0;
+    private boolean isActive = true;
     private boolean isPopular = false;
     private String description;
     private List<String> equipmentNeeded = new ArrayList<>();
@@ -63,6 +69,24 @@ public class Sport {
     public String getIconName() { return iconName; }
     public void setIconName(String iconName) { this.iconName = iconName; }
     
+    public String getIconUrl() { return iconUrl; }
+    public void setIconUrl(String iconUrl) { this.iconUrl = iconUrl; }
+    
+    public String getDifficultyLevel() { return difficultyLevel; }
+    public void setDifficultyLevel(String difficultyLevel) { this.difficultyLevel = difficultyLevel; }
+    
+    public List<String> getCharacteristics() { return characteristics; }
+    public void setCharacteristics(List<String> characteristics) { this.characteristics = characteristics; }
+    
+    public List<String> getEquipment() { return equipment; }
+    public void setEquipment(List<String> equipment) { this.equipment = equipment; }
+    
+    public int getPopularity() { return popularity; }
+    public void setPopularity(int popularity) { this.popularity = popularity; }
+    
+    public boolean isActive() { return isActive; }
+    public void setActive(boolean active) { isActive = active; }
+    
     public boolean isPopular() { return isPopular; }
     public void setPopular(boolean popular) { isPopular = popular; }
     
@@ -75,10 +99,14 @@ public class Sport {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     
-    // Business methods
+        // Business methods
     public void addEquipment(String equipment) {
         if (!equipmentNeeded.contains(equipment)) {
             equipmentNeeded.add(equipment);
         }
+    }
+    
+    public void incrementPopularity() {
+        this.popularity++;
     }
 }

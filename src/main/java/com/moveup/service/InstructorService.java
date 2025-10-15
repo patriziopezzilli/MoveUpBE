@@ -90,8 +90,6 @@ public class InstructorService {
         if (updatedInstructor.getLastName() != null) {
             existingInstructor.setLastName(updatedInstructor.getLastName());
         }
-        // TODO: These fields don't exist on Instructor - should be on User
-        /*
         if (updatedInstructor.getDateOfBirth() != null) {
             existingInstructor.setDateOfBirth(updatedInstructor.getDateOfBirth());
         }
@@ -107,13 +105,15 @@ public class InstructorService {
         if (updatedInstructor.getSports() != null) {
             existingInstructor.setSports(updatedInstructor.getSports());
         }
-        */
         
         return instructorRepository.save(existingInstructor);
     }
     
     // Verify instructor email
     public boolean verifyEmail(String verificationToken) {
+        // TODO: Verification should be done through User entity, not Instructor
+        throw new RuntimeException("Email verification not implemented - use User service");
+        /*
         Optional<Instructor> instructorOpt = instructorRepository.findByVerificationToken(verificationToken);
         
         if (instructorOpt.isPresent()) {
@@ -126,6 +126,7 @@ public class InstructorService {
             // Send welcome email or notify admin for approval
             return true;
         }
+        */
         
         return false;
     }
@@ -136,8 +137,8 @@ public class InstructorService {
                 .orElseThrow(() -> new RuntimeException("Istruttore non trovato"));
         
         instructor.setAvailable(true);
-        instructor.getProfessionalInfo().setApprovalStatus("APPROVED");
-        instructor.getProfessionalInfo().setApprovedAt(LocalDateTime.now());
+        instructor.setApprovalStatus("APPROVED");
+        instructor.setApprovedAt(LocalDateTime.now());
         
         instructorRepository.save(instructor);
         
@@ -155,8 +156,8 @@ public class InstructorService {
         Instructor instructor = instructorRepository.findById(instructorId)
                 .orElseThrow(() -> new RuntimeException("Istruttore non trovato"));
         
-        instructor.getProfessionalInfo().setApprovalStatus("REJECTED");
-        instructor.getProfessionalInfo().setRejectionReason(reason);
+        instructor.setApprovalStatus("REJECTED");
+        instructor.setRejectionReason(reason);
         
         instructorRepository.save(instructor);
         
@@ -183,6 +184,10 @@ public class InstructorService {
         Instructor instructor = instructorRepository.findById(instructorId)
                 .orElseThrow(() -> new RuntimeException("Istruttore non trovato"));
         
+        // TODO: InstructorSport class doesn't exist - using simple specializations list
+        instructor.getSpecializations().add(sport.getId());
+        instructorRepository.save(instructor);
+        /*
         Instructor.InstructorSport instructorSport = new Instructor.InstructorSport();
         instructorSport.setSportId(sport.getId());
         instructorSport.setHourlyRate(hourlyRate);
@@ -190,6 +195,7 @@ public class InstructorService {
         
         instructor.getSports().add(instructorSport);
         instructorRepository.save(instructor);
+        */
     }
     
     // Update rating
@@ -201,8 +207,8 @@ public class InstructorService {
         double averageRating = reviewService.calculateAverageRatingForInstructor(instructorId);
         long totalReviews = reviewService.countReviewsForInstructor(instructorId);
         
-        instructor.getProfessionalInfo().setAverageRating(averageRating);
-        instructor.getProfessionalInfo().setTotalReviews((int) totalReviews);
+        instructor.setRating(averageRating);
+        instructor.setTotalReviews((int) totalReviews);
         
         instructorRepository.save(instructor);
     }
@@ -254,10 +260,10 @@ public class InstructorService {
                 .orElseThrow(() -> new RuntimeException("Istruttore non trovato"));
         
         InstructorStatistics stats = new InstructorStatistics();
-        stats.setAverageRating(instructor.getProfessionalInfo().getAverageRating());
-        stats.setTotalReviews(instructor.getProfessionalInfo().getTotalReviews());
-        stats.setTotalLessons(instructor.getProfessionalInfo().getTotalLessons());
-        stats.setYearsOfExperience(instructor.getProfessionalInfo().getYearsOfExperience());
+        stats.setAverageRating(instructor.getRating());
+        stats.setTotalReviews(instructor.getTotalReviews());
+        stats.setTotalLessons(instructor.getTotalLessons());
+        stats.setYearsOfExperience(instructor.getYearsOfExperience());
         // Add more statistics from bookings, reviews, etc.
         
         return stats;
@@ -268,12 +274,16 @@ public class InstructorService {
         Instructor instructor = instructorRepository.findById(instructorId)
                 .orElseThrow(() -> new RuntimeException("Istruttore non trovato"));
         
+        // TODO: Password management should be done through User entity, not Instructor
+        throw new RuntimeException("Password change not implemented - use User service");
+        /*
         if (!passwordEncoder.matches(currentPassword, instructor.getPassword())) {
             throw new RuntimeException("Password attuale non corretta");
         }
         
         instructor.setPassword(passwordEncoder.encode(newPassword));
         instructorRepository.save(instructor);
+        */
     }
     
     // Deactivate instructor

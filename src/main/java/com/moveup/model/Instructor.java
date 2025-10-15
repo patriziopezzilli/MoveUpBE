@@ -28,9 +28,14 @@ public class Instructor {
     private String firstName;
     private String lastName;
     private String email;
+    private String phoneNumber;
+    private java.time.LocalDate dateOfBirth;
     
     @NotBlank
     private String bio;
+    
+    private String professionalInfo; // Additional professional details
+    private String address; // Denormalized from User.location
     
     private List<String> specializations = new ArrayList<>(); // Sport IDs
     private List<Certification> certifications = new ArrayList<>();
@@ -44,10 +49,17 @@ public class Instructor {
     private Location location;
     
     private boolean isApproved = false;
+    private String approvalStatus = "PENDING"; // PENDING, APPROVED, REJECTED
+    private LocalDateTime approvedAt;
+    private String rejectionReason;
+    private boolean isActive = true;
+    private boolean isAvailable = false;
     private double rating = 0.0;
+    private int totalReviews = 0;
     private int totalLessons = 0;
     private double totalEarnings = 0.0;
     private double profileCompletion = 0.0;
+    private int yearsOfExperience = 0;
     private InstructorAnalytics analytics = new InstructorAnalytics();
     
     // QR Code & Apple Wallet Pass
@@ -85,11 +97,27 @@ public class Instructor {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
     
+    public String getPhoneNumber() { return phoneNumber; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+    
+    public java.time.LocalDate getDateOfBirth() { return dateOfBirth; }
+    public void setDateOfBirth(java.time.LocalDate dateOfBirth) { this.dateOfBirth = dateOfBirth; }
+    
     public String getBio() { return bio; }
     public void setBio(String bio) { this.bio = bio; }
     
+    public String getProfessionalInfo() { return professionalInfo; }
+    public void setProfessionalInfo(String professionalInfo) { this.professionalInfo = professionalInfo; }
+    
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+    
     public List<String> getSpecializations() { return specializations; }
     public void setSpecializations(List<String> specializations) { this.specializations = specializations; }
+    
+    // Convenience method - alias for specializations
+    public List<String> getSports() { return specializations; }
+    public void setSports(List<String> sports) { this.specializations = sports; }
     
     public List<Certification> getCertifications() { return certifications; }
     public void setCertifications(List<Certification> certifications) { this.certifications = certifications; }
@@ -106,8 +134,17 @@ public class Instructor {
     public boolean isApproved() { return isApproved; }
     public void setApproved(boolean approved) { isApproved = approved; }
     
+    public boolean isActive() { return isActive; }
+    public void setActive(boolean active) { isActive = active; }
+    
+    public boolean isAvailable() { return isAvailable; }
+    public void setAvailable(boolean available) { isAvailable = available; }
+    
     public double getRating() { return rating; }
     public void setRating(double rating) { this.rating = rating; }
+    
+    public int getTotalReviews() { return totalReviews; }
+    public void setTotalReviews(int totalReviews) { this.totalReviews = totalReviews; }
     
     public int getTotalLessons() { return totalLessons; }
     public void setTotalLessons(int totalLessons) { this.totalLessons = totalLessons; }
@@ -117,6 +154,18 @@ public class Instructor {
     
     public double getProfileCompletion() { return profileCompletion; }
     public void setProfileCompletion(double profileCompletion) { this.profileCompletion = profileCompletion; }
+    
+    public int getYearsOfExperience() { return yearsOfExperience; }
+    public void setYearsOfExperience(int yearsOfExperience) { this.yearsOfExperience = yearsOfExperience; }
+    
+    public String getApprovalStatus() { return approvalStatus; }
+    public void setApprovalStatus(String approvalStatus) { this.approvalStatus = approvalStatus; }
+    
+    public LocalDateTime getApprovedAt() { return approvedAt; }
+    public void setApprovedAt(LocalDateTime approvedAt) { this.approvedAt = approvedAt; }
+    
+    public String getRejectionReason() { return rejectionReason; }
+    public void setRejectionReason(String rejectionReason) { this.rejectionReason = rejectionReason; }
     
     public InstructorAnalytics getAnalytics() { return analytics; }
     public void setAnalytics(InstructorAnalytics analytics) { this.analytics = analytics; }
