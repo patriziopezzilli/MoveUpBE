@@ -368,28 +368,27 @@ class GeoLocation {
     
     public double[] getCoordinates() { return coordinates; }
     public void setCoordinates(double[] coordinates) { this.coordinates = coordinates; }
-}
-}
+    }
 
-// Enums - DEVONO essere public
-public enum BookingStatus {
-    PENDING,
-    CONFIRMED,
-    COMPLETED,
-    CANCELLED,
-    NO_SHOW
-}
+    // Enums - DEVONO essere public
+    public enum BookingStatus {
+        PENDING,
+        CONFIRMED,
+        COMPLETED,
+        CANCELLED,
+        NO_SHOW
+    }
 
-public enum PaymentStatus {
-    PENDING,
-    AUTHORIZED,
-    CAPTURED,
-    REFUNDED,
-    FAILED
-}
+    public enum PaymentStatus {
+        PENDING,
+        AUTHORIZED,
+        CAPTURED,
+        REFUNDED,
+        FAILED
+    }
 
-// Classi inner - DEVONO essere public static
-public static class PaymentInfo {
+    // Classi inner - DEVONO essere public static
+    public static class PaymentInfo {
     private String stripePaymentIntentId;
     private String stripeCustomerId;
     private Double amount;
