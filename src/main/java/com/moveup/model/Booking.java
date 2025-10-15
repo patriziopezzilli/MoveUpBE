@@ -189,7 +189,7 @@ public class Booking {
     }
 }
 
-public enum BookingStatus {
+public static enum BookingStatus {
     PENDING("In attesa"),
     CONFIRMED("Confermata"),
     COMPLETED("Completata"),
@@ -207,7 +207,7 @@ public enum BookingStatus {
     }
 }
 
-public enum PaymentStatus {
+public static enum PaymentStatus {
     PENDING("In elaborazione"),
     AUTHORIZED("Autorizzato"),
     CAPTURED("Completato"),

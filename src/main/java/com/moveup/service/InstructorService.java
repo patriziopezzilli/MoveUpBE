@@ -40,6 +40,9 @@ public class InstructorService {
             throw new RuntimeException("Email già registrata");
         }
         
+        // TODO: Refactor - Instructor doesn't have password/username/verification fields
+        // These should be managed through associated User entity
+        /*
         // Check if username already exists
         if (instructor.getUsername() != null && instructorRepository.existsByUsername(instructor.getUsername())) {
             throw new RuntimeException("Username già utilizzato");
@@ -55,6 +58,7 @@ public class InstructorService {
         instructor.setActive(true);
         instructor.setVerified(false);
         instructor.setAvailable(false); // Needs verification first
+        */
         
         Instructor savedInstructor = instructorRepository.save(instructor);
         
@@ -86,6 +90,8 @@ public class InstructorService {
         if (updatedInstructor.getLastName() != null) {
             existingInstructor.setLastName(updatedInstructor.getLastName());
         }
+        // TODO: These fields don't exist on Instructor - should be on User
+        /*
         if (updatedInstructor.getDateOfBirth() != null) {
             existingInstructor.setDateOfBirth(updatedInstructor.getDateOfBirth());
         }
@@ -101,6 +107,7 @@ public class InstructorService {
         if (updatedInstructor.getSports() != null) {
             existingInstructor.setSports(updatedInstructor.getSports());
         }
+        */
         
         return instructorRepository.save(existingInstructor);
     }

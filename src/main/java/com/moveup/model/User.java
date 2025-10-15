@@ -199,11 +199,11 @@ public class User {
 }
 
 // Enum classes
-public enum UserType {
+public static enum UserType {
     USER, INSTRUCTOR, ADMIN
 }
 
-public enum SkillLevel {
+public static enum SkillLevel {
     BEGINNER, INTERMEDIATE, ADVANCED, PROFESSIONAL
 }
 
