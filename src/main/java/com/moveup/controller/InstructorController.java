@@ -25,10 +25,6 @@ public class InstructorController {
         try {
             Instructor createdInstructor = instructorService.createInstructor(instructor);
             
-            // Remove sensitive information from response
-            createdInstructor.setPassword(null);
-            createdInstructor.setVerificationToken(null);
-            
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(Map.of(
                         "message", "Istruttore registrato con successo. Controlla la tua email per la verifica.",

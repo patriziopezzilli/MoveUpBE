@@ -8,7 +8,6 @@ import com.stripe.model.Account;
 import com.stripe.model.ExternalAccount;
 import com.stripe.model.Transfer;
 import com.stripe.param.AccountCreateParams;
-import com.stripe.param.ExternalAccountCreateOnAccountParams;
 import com.stripe.param.TransferCreateParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -82,14 +81,9 @@ public class StripeService {
         bankAccountParams.put("currency", "eur");
         bankAccountParams.put("account_holder_name", accountHolderName);
         bankAccountParams.put("account_number", iban);
+        bankAccountParams.put("default_for_currency", true);
         
         // Add external account to connected account
-        ExternalAccountCreateOnAccountParams params = 
-            ExternalAccountCreateOnAccountParams.builder()
-                .setExternalAccount(iban)
-                .setDefaultForCurrency(true)
-                .build();
-        
         Account account = Account.retrieve(stripeAccountId);
         return account.getExternalAccounts().create(bankAccountParams);
     }

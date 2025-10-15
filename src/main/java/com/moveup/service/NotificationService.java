@@ -1,6 +1,8 @@
 package com.moveup.service;
 
 import com.moveup.model.Notification;
+import com.moveup.model.NotificationType;
+import com.moveup.model.NotificationPriority;
 import com.moveup.model.User;
 import com.moveup.repository.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,7 @@ public class NotificationService {
     // Create notification
     public Notification createNotification(String recipientId, String title, String message, String type) {
         Notification notification = new Notification(recipientId, title, message, 
-            Notification.NotificationType.valueOf(type));
+            NotificationType.valueOf(type));
         return notificationRepository.save(notification);
     }
     
@@ -66,7 +68,7 @@ public class NotificationService {
         notification.setRecipientId(userId);
         notification.setTitle("Prenotazione Confermata");
         notification.setMessage("La tua prenotazione è stata confermata con successo!");
-        notification.setType(Notification.NotificationType.BOOKING_CONFIRMATION);
+        notification.setType(NotificationType.BOOKING_CONFIRMATION);
         notification.setRelatedEntityId(bookingId);
         notification.setRelatedEntityType("BOOKING");
         
@@ -79,10 +81,10 @@ public class NotificationService {
         notification.setRecipientId(userId);
         notification.setTitle("Promemoria Lezione");
         notification.setMessage("Non dimenticare la tua lezione oggi alle " + lessonTime.toLocalTime());
-        notification.setType(Notification.NotificationType.BOOKING_REMINDER);
+        notification.setType(NotificationType.BOOKING_REMINDER);
         notification.setRelatedEntityId(bookingId);
         notification.setRelatedEntityType("BOOKING");
-        notification.setPriority(Notification.NotificationPriority.HIGH);
+        notification.setPriority(NotificationPriority.HIGH);
         
         notificationRepository.save(notification);
     }
@@ -93,7 +95,7 @@ public class NotificationService {
         notification.setRecipientId(userId);
         notification.setTitle("Prenotazione Cancellata");
         notification.setMessage("La tua prenotazione è stata cancellata.");
-        notification.setType(Notification.NotificationType.BOOKING_CANCELLED);
+        notification.setType(NotificationType.BOOKING_CANCELLED);
         notification.setRelatedEntityId(bookingId);
         notification.setRelatedEntityType("BOOKING");
         
@@ -106,7 +108,7 @@ public class NotificationService {
         notification.setRecipientId(instructorId);
         notification.setTitle("Nuova Recensione");
         notification.setMessage("Hai ricevuto una nuova recensione con " + rating + " stelle!");
-        notification.setType(Notification.NotificationType.NEW_REVIEW);
+        notification.setType(NotificationType.NEW_REVIEW);
         notification.setRelatedEntityId(reviewId);
         notification.setRelatedEntityType("REVIEW");
         
@@ -119,7 +121,7 @@ public class NotificationService {
         notification.setRecipientId(userId);
         notification.setTitle("Pagamento Completato");
         notification.setMessage(String.format("Pagamento di €%.2f completato con successo!", amount));
-        notification.setType(Notification.NotificationType.PAYMENT_SUCCESS);
+        notification.setType(NotificationType.PAYMENT_SUCCESS);
         notification.setRelatedEntityId(bookingId);
         notification.setRelatedEntityType("BOOKING");
         
@@ -132,10 +134,10 @@ public class NotificationService {
         notification.setRecipientId(userId);
         notification.setTitle("Pagamento Fallito");
         notification.setMessage("Il pagamento non è andato a buon fine. Riprova o contatta il supporto.");
-        notification.setType(Notification.NotificationType.PAYMENT_FAILED);
+        notification.setType(NotificationType.PAYMENT_FAILED);
         notification.setRelatedEntityId(bookingId);
         notification.setRelatedEntityType("BOOKING");
-        notification.setPriority(Notification.NotificationPriority.HIGH);
+        notification.setPriority(NotificationPriority.HIGH);
         
         notificationRepository.save(notification);
     }
@@ -146,7 +148,7 @@ public class NotificationService {
         notification.setRecipientId(userId);
         notification.setTitle("Badge Ottenuto!");
         notification.setMessage("Complimenti! Hai ottenuto il badge: " + badgeTitle);
-        notification.setType(Notification.NotificationType.BADGE_EARNED);
+        notification.setType(NotificationType.BADGE_EARNED);
         notification.setRelatedEntityId(badgeId);
         notification.setRelatedEntityType("BADGE");
         
@@ -159,7 +161,7 @@ public class NotificationService {
         notification.setRecipientId(userId);
         notification.setTitle("Ricompensa Disponibile");
         notification.setMessage("Hai abbastanza punti per riscattare: " + rewardTitle);
-        notification.setType(Notification.NotificationType.REWARD_AVAILABLE);
+        notification.setType(NotificationType.REWARD_AVAILABLE);
         notification.setRelatedEntityId(rewardId);
         notification.setRelatedEntityType("REWARD");
         
@@ -172,7 +174,7 @@ public class NotificationService {
         notification.setRecipientId(user.getId());
         notification.setTitle("Punti Guadagnati!");
         notification.setMessage(String.format("Hai guadagnato %d punti per: %s", points, reason));
-        notification.setType(Notification.NotificationType.SYSTEM_UPDATE);
+        notification.setType(NotificationType.SYSTEM_UPDATE);
         
         notificationRepository.save(notification);
     }
@@ -184,7 +186,7 @@ public class NotificationService {
         notification.setRecipientId(recipientId);
         notification.setTitle(title);
         notification.setMessage(message);
-        notification.setType(Notification.NotificationType.valueOf(type));
+        notification.setType(NotificationType.valueOf(type));
         notification.setScheduledFor(scheduledFor);
         
         return notificationRepository.save(notification);

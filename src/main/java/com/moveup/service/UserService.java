@@ -44,11 +44,6 @@ public class UserService {
             throw new RuntimeException("Email già registrata");
         }
         
-        // Check if username already exists
-        if (user.getUsername() != null && userRepository.existsByUsername(user.getUsername())) {
-            throw new RuntimeException("Username già utilizzato");
-        }
-        
         // Encode password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         

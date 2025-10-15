@@ -1,6 +1,8 @@
 package com.moveup.service;
 
 import com.moveup.model.Booking;
+import com.moveup.model.BookingStatus;
+import com.moveup.model.PaymentStatus;
 import com.moveup.model.User;
 import com.moveup.model.Instructor;
 import com.moveup.repository.BookingRepository;
@@ -170,7 +172,7 @@ public class BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Prenotazione non trovata"));
         
-        booking.setStatus(Booking.BookingStatus.NO_SHOW);
+        booking.setStatus(BookingStatus.NO_SHOW);
         bookingRepository.save(booking);
     }
     
@@ -200,7 +202,7 @@ public class BookingService {
             );
             
             booking.getPayment().setStripePaymentIntentId(paymentIntentId);
-            booking.setPaymentStatus(Booking.PaymentStatus.AUTHORIZED);
+            booking.setPaymentStatus(PaymentStatus.AUTHORIZED);
             bookingRepository.save(booking);
             
             // Send payment success notification
@@ -212,7 +214,7 @@ public class BookingService {
             
         } catch (Exception e) {
             // Handle payment failure
-            booking.setPaymentStatus(Booking.PaymentStatus.FAILED);
+            booking.setPaymentStatus(PaymentStatus.FAILED);
             bookingRepository.save(booking);
             
             notificationService.sendPaymentFailedNotification(
