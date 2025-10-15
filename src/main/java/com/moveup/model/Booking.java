@@ -189,7 +189,7 @@ public class Booking {
     }
 }
 
-public static enum BookingStatus {
+static enum BookingStatus {
     PENDING("In attesa"),
     CONFIRMED("Confermata"),
     COMPLETED("Completata"),
@@ -207,7 +207,7 @@ public static enum BookingStatus {
     }
 }
 
-public static enum PaymentStatus {
+static enum PaymentStatus {
     PENDING("In elaborazione"),
     AUTHORIZED("Autorizzato"),
     CAPTURED("Completato"),
@@ -226,7 +226,7 @@ public static enum PaymentStatus {
 }
 
 // Embedded classes
-public static class PaymentInfo {
+static class PaymentInfo {
     private String stripePaymentIntentId;
     private String stripeChargeId;
     private String refundId;
@@ -253,7 +253,7 @@ public static class PaymentInfo {
     public void setProcessingFee(double processingFee) { this.processingFee = processingFee; }
 }
 
-public static class CancellationInfo {
+static class CancellationInfo {
     private String cancelledBy;
     private LocalDateTime cancelledAt;
     private String reason;
@@ -283,7 +283,7 @@ public static class CancellationInfo {
 }
 
 // Apple Wallet Pass Info
-public static class WalletPassInfo {
+static class WalletPassInfo {
     private String serialNumber;
     private boolean passAdded;
     private java.util.List<String> deviceTokens = new java.util.ArrayList<>();
@@ -305,7 +305,7 @@ public static class WalletPassInfo {
 }
 
 // Live Activity Info
-public static class LiveActivityInfo {
+static class LiveActivityInfo {
     private String activityId;
     private String pushToken;
     private LocalDateTime startedAt;
@@ -331,7 +331,7 @@ public static class LiveActivityInfo {
 }
 
 // QR Code Check-in Info
-public static class CheckInInfo {
+static class CheckInInfo {
     private LocalDateTime checkedInAt;
     private boolean scannedQR;
     private GeoLocation location;
@@ -407,7 +407,7 @@ class GeoLocation {
     public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
 }
 
-public static class CancellationInfo {
+static class CancellationInfo {
     private String reason;
     private LocalDateTime cancelledAt;
     private String cancelledBy;
@@ -423,7 +423,7 @@ public static class CancellationInfo {
     public void setRefundIssued(boolean refundIssued) { this.refundIssued = refundIssued; }
 }
 
-public static class WalletPassInfo {
+static class WalletPassInfo {
     private String passId;
     private String passUrl;
     private boolean added;
@@ -436,7 +436,7 @@ public static class WalletPassInfo {
     public void setAdded(boolean added) { this.added = added; }
 }
 
-public static class LiveActivityInfo {
+static class LiveActivityInfo {
     private String activityId;
     private boolean active;
 
@@ -446,7 +446,7 @@ public static class LiveActivityInfo {
     public void setActive(boolean active) { this.active = active; }
 }
 
-public static class CheckInInfo {
+static class CheckInInfo {
     private boolean studentCheckedIn;
     private boolean instructorCheckedIn;
     private LocalDateTime studentCheckInTime;

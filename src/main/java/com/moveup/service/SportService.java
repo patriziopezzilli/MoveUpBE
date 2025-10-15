@@ -198,11 +198,13 @@ public class SportService {
     }
     
     // Add equipment to sport
-    public void addEquipmentToSport(String sportId, Sport.Equipment equipment) {
+    public void addEquipmentToSport(String sportId, String equipment) {
         Sport sport = sportRepository.findById(sportId)
                 .orElseThrow(() -> new RuntimeException("Sport non trovato"));
         
-        sport.getEquipment().add(equipment);
+        if (!sport.getEquipment().contains(equipment)) {
+            sport.getEquipment().add(equipment);
+        }
         sportRepository.save(sport);
     }
     
@@ -211,7 +213,7 @@ public class SportService {
         Sport sport = sportRepository.findById(sportId)
                 .orElseThrow(() -> new RuntimeException("Sport non trovato"));
         
-        sport.getEquipment().removeIf(eq -> eq.getName().equals(equipmentName));
+        sport.getEquipment().remove(equipmentName);
         sportRepository.save(sport);
     }
     

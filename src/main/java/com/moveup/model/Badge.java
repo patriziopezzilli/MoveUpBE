@@ -227,7 +227,7 @@ class BadgeRequirements {
     }
 }
 
-public static class BadgeRewards {
+static class BadgeRewards {
     private int points;
     private int experiencePoints;
     private String unlockableFeature;
