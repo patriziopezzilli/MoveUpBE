@@ -1,8 +1,8 @@
 package com.moveup.service;
 
 import com.moveup.model.Booking;
-import com.moveup.model.BookingStatus;
-import com.moveup.model.PaymentStatus;
+import com.moveup.model.Booking.BookingStatus;
+import com.moveup.model.Booking.PaymentStatus;
 import com.moveup.model.User;
 import com.moveup.model.Instructor;
 import com.moveup.repository.BookingRepository;
