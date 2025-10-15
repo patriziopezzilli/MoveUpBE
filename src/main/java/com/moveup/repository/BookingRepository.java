@@ -129,5 +129,4 @@ public interface BookingRepository extends MongoRepository<Booking, String> {
     @Query("{'walletPass.serialNumber': ?0}")
     Optional<Booking> findByWalletPassSerialNumber(String serialNumber);
 }
-```
 }

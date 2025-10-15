@@ -288,4 +288,3 @@ class InstructorQRPassInfo {
         this.lastScan = LocalDateTime.now();
     }
 }
-```

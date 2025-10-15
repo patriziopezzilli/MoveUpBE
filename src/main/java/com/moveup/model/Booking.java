@@ -369,5 +369,4 @@ class GeoLocation {
     public double[] getCoordinates() { return coordinates; }
     public void setCoordinates(double[] coordinates) { this.coordinates = coordinates; }
 }
-```
 }

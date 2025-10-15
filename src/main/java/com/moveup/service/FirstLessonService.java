@@ -29,7 +29,7 @@ public class FirstLessonService {
     // Configuration
     private static final int MAX_FREE_LESSONS = 500; // Limite campagna
     private static final double MAX_FREE_LESSON_AMOUNT = 10.0; // Max €10 gratis
-    private static int freeLesson sGiven = 0; // Counter campagna
+    private static int freeLessonsGiven = 0; // Counter campagna
     
     /**
      * Check se l'utente ha diritto alla prima lezione gratis
