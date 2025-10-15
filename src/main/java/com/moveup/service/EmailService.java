@@ -108,6 +108,9 @@ public class EmailService {
     
     // Send instructor verification email
     public void sendInstructorVerificationEmail(Instructor instructor) {
+        // TODO: Verification should be done through User entity, not Instructor
+        throw new RuntimeException("Instructor verification not implemented - use User service");
+        /*
         try {
             String verificationUrl = frontendUrl + "/instructor/verify-email?token=" + instructor.getVerificationToken();
             
@@ -120,6 +123,7 @@ public class EmailService {
         } catch (Exception e) {
             logger.error("Failed to send instructor verification email to: {}", instructor.getEmail(), e);
         }
+        */
     }
     
     // Generic method to send HTML emails

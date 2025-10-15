@@ -2,9 +2,8 @@ package com.moveup.service;
 
 import com.moveup.dto.CoordinateDTO;
 import com.moveup.dto.InstructorMapDTO;
-import com.moveup.model.User;
-import com.moveup.model.UserType;
-import com.moveup.repository.UserRepository;
+import com.moveup.model.Instructor;
+import com.moveup.repository.InstructorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +15,7 @@ import java.util.stream.Collectors;
 public class MapSearchService {
     
     @Autowired
-    private UserRepository userRepository;
+    private InstructorRepository instructorRepository;
     
     @Autowired
     private GeocodingService geocodingService;
@@ -38,15 +37,15 @@ public class MapSearchService {
             Double minRating
     ) {
         // Get all instructors (in production, use geospatial query)
-        List<User> instructors = userRepository.findByUserType(UserType.INSTRUCTOR);
+        List<Instructor> instructors = instructorRepository.findAll();
         
         List<InstructorMapDTO> nearbyInstructors = new ArrayList<>();
         
-        for (User instructor : instructors) {
+        for (Instructor instructor : instructors) {
             // Skip if no location
             if (instructor.getLocation() == null || 
-                instructor.getLocation().getLatitude() == null || 
-                instructor.getLocation().getLongitude() == null) {
+                instructor.getLocation().getLatitude() == 0.0 || 
+                instructor.getLocation().getLongitude() == 0.0) {
                 continue;
             }
             
@@ -64,13 +63,13 @@ public class MapSearchService {
             if (distanceKm <= maxDistanceKm) {
                 // Apply filters
                 if (sport != null && !sport.isEmpty()) {
-                    if (instructor.getSportSkillLevels() == null || 
-                        !instructor.getSportSkillLevels().containsKey(sport)) {
+                    if (instructor.getSpecializations() == null || 
+                        !instructor.getSpecializations().contains(sport)) {
                         continue;
                     }
                 }
                 
-                if (minRating != null && instructor.getRating() != null) {
+                if (minRating != null) {
                     if (instructor.getRating() < minRating) {
                         continue;
                     }
@@ -86,9 +85,9 @@ public class MapSearchService {
                 coordinate.setLongitude(instructor.getLocation().getLongitude());
                 dto.setCoordinate(coordinate);
                 
-                // Get primary sport (first in sportSkillLevels)
-                if (instructor.getSportSkillLevels() != null && !instructor.getSportSkillLevels().isEmpty()) {
-                    String primarySport = instructor.getSportSkillLevels().keySet().iterator().next();
+                // Get primary sport (first in specializations)
+                if (instructor.getSpecializations() != null && !instructor.getSpecializations().isEmpty()) {
+                    String primarySport = instructor.getSpecializations().get(0);
                     dto.setSport(primarySport);
                 }
                 

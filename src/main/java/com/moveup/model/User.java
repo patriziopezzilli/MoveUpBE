@@ -262,8 +262,8 @@ class UserPreferences {
     public void setLanguage(String language) { this.language = language; }
 }
 
-// GameStatus inner class (package-private, only used internally)
-class GameStatus {
+// GameStatus inner class (used by services)
+static class GameStatus {
     private int totalPoints = 0;
     private int level = 1;
     private List<String> badges = new ArrayList<>();

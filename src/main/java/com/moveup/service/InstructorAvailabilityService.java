@@ -38,6 +38,10 @@ public class InstructorAvailabilityService {
             String sport,
             Integer maxResults
     ) {
+        // TODO: Implement instant booking with proper repository methods
+        return new ArrayList<>(); // Return empty list for now
+        
+        /*
         // 1. Trova trainer nel raggio geografico
         List<Instructor> nearbyInstructors = instructorRepository.findByLocationNear(
             userLat, 
@@ -48,7 +52,7 @@ public class InstructorAvailabilityService {
         // 2. Filtra per sport se specificato
         if (sport != null && !sport.isEmpty()) {
             nearbyInstructors = nearbyInstructors.stream()
-                .filter(instructor -> instructor.getSports().contains(sport))
+                .filter(instructor -> instructor.getSpecializations().contains(sport))
                 .collect(Collectors.toList());
         }
         
@@ -66,13 +70,15 @@ public class InstructorAvailabilityService {
             for (InstructorAvailability availability : todayAvailability) {
                 if (!availability.isAvailable()) continue;
                 
-                LocalTime availStart = availability.getStartTime();
-                LocalTime availEnd = availability.getEndTime();
-                LocalTime currentTime = now.toLocalTime();
+                // Use availability slots instead of getStartTime/getEndTime
+                for (var slot : availability.getAvailableSlots()) {
+                    LocalTime availStart = slot.getStartTime();
+                    LocalTime availEnd = slot.getEndTime();
+                    LocalTime currentTime = now.toLocalTime();
                 
-                // Check se la disponibilità copre le prossime 2 ore
-                if (availStart.isBefore(twoHoursLater.toLocalTime()) && 
-                    availEnd.isAfter(currentTime)) {
+                    // Check se la disponibilità copre le prossime 2 ore
+                    if (availStart.isBefore(twoHoursLater.toLocalTime()) && 
+                        availEnd.isAfter(currentTime)) {
                     
                     // Verifica che non ci siano booking in conflitto
                     boolean hasConflict = !bookingRepository.findConflictingBookings(
@@ -121,10 +127,12 @@ public class InstructorAvailabilityService {
         }
         
         return results;
+        */
     }
     
     /**
      * Trova trainer disponibili in un range orario specifico
+     * TODO: Implement with proper repository methods and model fields
      */
     public List<InstantBookingResult> findAvailableInTimeRange(
             Double userLat,
@@ -134,6 +142,14 @@ public class InstructorAvailabilityService {
             LocalDateTime startTime,
             LocalDateTime endTime
     ) {
+        // TODO: This method requires:
+        // - findByLocationNear in InstructorRepository
+        // - findByInstructorIdAndDayOfWeek in InstructorAvailabilityRepository
+        // - getStartTime/getEndTime in InstructorAvailability (use TimeSlot objects)
+        // - getLatitude/getLongitude in Instructor model
+        // - getLocation in InstructorAvailability model
+        throw new RuntimeException("findAvailableInTimeRange not yet implemented");
+        /*
         List<Instructor> nearbyInstructors = instructorRepository.findByLocationNear(
             userLat, userLng, radiusKm != null ? radiusKm : 10.0
         );
@@ -185,6 +201,7 @@ public class InstructorAvailabilityService {
         results.sort(Comparator.comparing(InstantBookingResult::getDistance));
         
         return results;
+        */
     }
     
     // Haversine formula per calcolare distanza tra due coordinate
