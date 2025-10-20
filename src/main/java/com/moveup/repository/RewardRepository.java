@@ -15,9 +15,11 @@ public interface RewardRepository extends MongoRepository<Reward, String> {
     List<Reward> findByType(String type);
     
     // Find active rewards
+    @Query("{'isActive': true}")
     List<Reward> findByIsActiveTrue();
     
     // Find featured rewards
+    @Query("{'isFeatured': true}")
     List<Reward> findByIsFeaturedTrue();
     
     // Find available rewards (active and has quantity)

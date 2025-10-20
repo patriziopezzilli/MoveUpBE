@@ -37,9 +37,11 @@ public interface UserRepository extends MongoRepository<User, String> {
     Optional<User> findByResetPasswordToken(String resetPasswordToken);
     
     // Find active users
+    @Query("{'isActive': true}")
     List<User> findByIsActiveTrue();
     
     // Find verified users
+    @Query("{'isVerified': true}")
     List<User> findByIsVerifiedTrue();
     
     // Find users by city

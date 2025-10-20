@@ -30,12 +30,15 @@ public interface InstructorRepository extends MongoRepository<Instructor, String
     Optional<Instructor> findByPhoneNumber(String phoneNumber);
     
     // Find active instructors
+    @Query("{'isActive': true}")
     List<Instructor> findByIsActiveTrue();
     
     // Find verified instructors
+    @Query("{'isVerified': true}")
     List<Instructor> findByIsVerifiedTrue();
     
     // Find available instructors
+    @Query("{'isAvailable': true}")
     List<Instructor> findByIsAvailableTrue();
     
     // Find instructors by sport
@@ -75,6 +78,7 @@ public interface InstructorRepository extends MongoRepository<Instructor, String
     long countByIsActiveTrue();
     
     // Count verified instructors
+    @Query(value = "{'isVerified': true}", count = true)
     long countByIsVerifiedTrue();
     
     // Count available instructors

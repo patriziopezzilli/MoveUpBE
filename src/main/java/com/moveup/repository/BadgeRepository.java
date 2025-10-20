@@ -24,6 +24,7 @@ public interface BadgeRepository extends MongoRepository<Badge, String> {
     List<Badge> findByRarity(String rarity);
     
     // Find active badges
+    @Query("{'isActive': true}")
     List<Badge> findByIsActiveTrue();
     
     // Find by type and category

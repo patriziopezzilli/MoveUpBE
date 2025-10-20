@@ -18,6 +18,7 @@ public interface LessonRepository extends MongoRepository<Lesson, String> {
     List<Lesson> findBySportId(String sportId);
     
     // Find active lessons
+    @Query("{'isActive': true}")
     List<Lesson> findByIsActiveTrue();
     
     // Find lessons by type

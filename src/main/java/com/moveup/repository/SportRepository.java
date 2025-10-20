@@ -21,6 +21,7 @@ public interface SportRepository extends MongoRepository<Sport, String> {
     List<Sport> findByCategory(String category);
     
     // Find active sports
+    @Query("{'isActive': true}")
     List<Sport> findByIsActiveTrue();
     
     // Find popular sports
