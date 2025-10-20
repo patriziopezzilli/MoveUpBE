@@ -537,13 +537,28 @@ public class PaymentService {
             // Handle different event types
             switch (eventType) {
                 case "payment_intent.succeeded":
-                    handlePaymentIntentSucceeded(event);
+                    if (event != null) {
+                        JSONObject paymentIntentSucceeded = event.getData().getObject();
+                        handlePaymentIntentSucceeded(paymentIntentSucceeded);
+                    } else {
+                        logger.warn("Cannot process payment_intent.succeeded event: event is null (development fallback)");
+                    }
                     break;
                 case "payment_intent.payment_failed":
-                    handlePaymentIntentFailed(event);
+                    if (event != null) {
+                        JSONObject paymentIntentFailed = event.getData().getObject();
+                        handlePaymentIntentFailed(paymentIntentFailed);
+                    } else {
+                        logger.warn("Cannot process payment_intent.payment_failed event: event is null (development fallback)");
+                    }
                     break;
                 case "charge.dispute.created":
-                    handleChargeDispute(event);
+                    if (event != null) {
+                        JSONObject chargeDispute = event.getData().getObject();
+                        handleChargeDispute(chargeDispute);
+                    } else {
+                        logger.warn("Cannot process charge.dispute.created event: event is null (development fallback)");
+                    }
                     break;
                 default:
                     logger.info("Unhandled webhook event type: {}", eventType);
