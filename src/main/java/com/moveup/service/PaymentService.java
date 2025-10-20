@@ -538,15 +538,15 @@ public class PaymentService {
             switch (eventType) {
                 case "payment_intent.succeeded":
                     if (event != null) {
-                        JSONObject paymentIntentSucceeded = event.getData().getObject();
-                        handlePaymentIntentSucceeded(paymentIntentSucceeded);
+                        com.stripe.model.PaymentIntent paymentIntent = (com.stripe.model.PaymentIntent) event.getData().getObject();
+                        handlePaymentIntentSucceeded(paymentIntent);
                     } else {
                         logger.warn("Cannot process payment_intent.succeeded event: event is null (development fallback)");
                     }
                     break;
                 case "payment_intent.payment_failed":
                     if (event != null) {
-                        JSONObject paymentIntentFailed = event.getData().getObject();
+                        com.stripe.model.PaymentIntent paymentIntentFailed = (com.stripe.model.PaymentIntent) event.getData().getObject();
                         handlePaymentIntentFailed(paymentIntentFailed);
                     } else {
                         logger.warn("Cannot process payment_intent.payment_failed event: event is null (development fallback)");
@@ -554,7 +554,7 @@ public class PaymentService {
                     break;
                 case "charge.dispute.created":
                     if (event != null) {
-                        JSONObject chargeDispute = event.getData().getObject();
+                        com.stripe.model.Dispute chargeDispute = (com.stripe.model.Dispute) event.getData().getObject();
                         handleChargeDispute(chargeDispute);
                     } else {
                         logger.warn("Cannot process charge.dispute.created event: event is null (development fallback)");
@@ -568,8 +568,8 @@ public class PaymentService {
             logger.error("Failed to process Stripe webhook", e);
             throw new RuntimeException("Webhook processing failed: " + e.getMessage());
         }
-    }    private void handlePaymentIntentSucceeded(JSONObject paymentIntent) {
-        String paymentIntentId = paymentIntent.getString("id");
+    }    private void handlePaymentIntentSucceeded(com.stripe.model.PaymentIntent paymentIntent) {
+        String paymentIntentId = paymentIntent.getId();
         logger.info("Payment intent succeeded: {}", paymentIntentId);
 
         // Update payment status if exists
@@ -581,8 +581,8 @@ public class PaymentService {
         }
     }
 
-    private void handlePaymentIntentFailed(JSONObject paymentIntent) {
-        String paymentIntentId = paymentIntent.getString("id");
+    private void handlePaymentIntentFailed(com.stripe.model.PaymentIntent paymentIntent) {
+        String paymentIntentId = paymentIntent.getId();
         logger.warn("Payment intent failed: {}", paymentIntentId);
 
         // Update payment status if exists
@@ -594,8 +594,8 @@ public class PaymentService {
         }
     }
 
-    private void handleChargeDispute(JSONObject dispute) {
-        String paymentIntentId = dispute.optString("payment_intent");
+    private void handleChargeDispute(com.stripe.model.Dispute dispute) {
+        String paymentIntentId = dispute.getPaymentIntent();
         logger.warn("Charge dispute created for payment intent: {}", paymentIntentId);
 
         // Could implement dispute handling logic here
