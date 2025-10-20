@@ -4,6 +4,7 @@ import com.moveup.model.OutdoorLocation;
 import com.moveup.repository.OutdoorLocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -60,48 +61,6 @@ public class OutdoorLocationService {
         results.sort(Comparator.comparing(OutdoorLocationResult::getDistance));
         
         return results;
-    }
-        /*
-        List<OutdoorLocation> locations = locationRepository.findByLocationNear(
-            userLat, 
-            userLng, 
-            radiusKm != null ? radiusKm : 10.0
-        );
-        
-        // Filtra per tipo se specificato
-        if (locationType != null && !locationType.isEmpty()) {
-            locations = locations.stream()
-                .filter(loc -> loc.getType().equalsIgnoreCase(locationType))
-                .collect(Collectors.toList());
-        }
-        
-        // Filtra per sport compatibile
-        if (sport != null && !sport.isEmpty()) {
-            locations = locations.stream()
-                .filter(loc -> loc.getSuitableFor().contains(sport))
-                .collect(Collectors.toList());
-        }
-        
-        // Converti in risultati con distanza
-        List<OutdoorLocationResult> results = locations.stream()
-            .map(location -> {
-                double distance = calculateDistance(
-                    userLat, userLng,
-                    location.getLatitude(), location.getLongitude()
-                );
-                
-                return new OutdoorLocationResult(
-                    location,
-                    distance,
-                    getLocationPhotos(location),
-                    getAmenities(location)
-                );
-            })
-            .sorted(Comparator.comparing(OutdoorLocationResult::getDistance))
-            .collect(Collectors.toList());
-        
-        return results;
-        */
     }
     
     /**
@@ -197,12 +156,6 @@ public class OutdoorLocationService {
         if (location.hasWater()) amenities.add("Water");
         if (location.hasShade()) amenities.add("Shade");
         return amenities;
-    }
-        if (location.getHasRestrooms()) amenities.add("Restrooms");
-        if (location.getHasWater()) amenities.add("Water");
-        if (location.getHasShade()) amenities.add("Shade");
-        return amenities;
-        */
     }
     
     // Inner classes

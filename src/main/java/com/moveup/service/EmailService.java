@@ -1,5 +1,8 @@
 package com.moveup.service;
 
+import com.moveup.model.Booking;
+import com.moveup.model.Instructor;
+import com.moveup.model.User;
 import com.moveup.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

@@ -270,7 +270,13 @@ public class RankingService {
         private double lessonsScore;
         private double ratingScore;
         private double reviewsScore;
-        private double verifiedBonus
+        private double verifiedBonus;
+        private double versatilityBonus;
+        private double totalScore;
+        
+        public RankingScore(double lessonsScore, double ratingScore, double reviewsScore, 
+                          double verifiedBonus, double versatilityBonus, double totalScore) {
+            this.lessonsScore = lessonsScore;
             this.ratingScore = ratingScore;
             this.reviewsScore = reviewsScore;
             this.verifiedBonus = verifiedBonus;
