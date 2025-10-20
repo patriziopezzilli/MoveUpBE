@@ -19,10 +19,12 @@ public interface UserRepository extends MongoRepository<User, String> {
     // Check if email exists
     boolean existsByEmail(String email);
     
-    // Find by username
+    // Find by email (username is now email)
+    @Query("{ 'email' : ?0 }")
     Optional<User> findByUsername(String username);
     
-    // Check if username exists
+    // Check if email exists (username is now email)
+    @Query(value = "{ 'email' : ?0 }", exists = true)
     boolean existsByUsername(String username);
     
     // Find by phone number
