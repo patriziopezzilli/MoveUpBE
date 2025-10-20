@@ -202,7 +202,7 @@ public class InstructorService {
     
     // Find instructors by location
     public List<Instructor> getInstructorsByCity(String city) {
-        return instructorRepository.findByAddressCity(city);
+        return instructorRepository.findByLocationCity(city);
     }
     
     // Find instructors by rating

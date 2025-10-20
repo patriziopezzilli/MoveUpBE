@@ -43,7 +43,7 @@ public interface UserRepository extends MongoRepository<User, String> {
     List<User> findByIsVerifiedTrue();
     
     // Find users by city
-    List<User> findByAddressCity(String city);
+    List<User> findByLocationCity(String city);
     
     // Find users created between dates
     List<User> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);

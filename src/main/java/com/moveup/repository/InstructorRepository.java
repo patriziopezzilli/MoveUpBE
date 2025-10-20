@@ -47,7 +47,7 @@ public interface InstructorRepository extends MongoRepository<Instructor, String
     List<Instructor> findBySportId(String sportId);
     
     // Find instructors by city
-    List<Instructor> findByAddressCity(String city);
+    List<Instructor> findByLocationCity(String city);
     
     // Find instructors by rating (greater than or equal)
     @Query("{'professionalInfo.averageRating': {$gte: ?0}}")

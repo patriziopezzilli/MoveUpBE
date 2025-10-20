@@ -337,7 +337,7 @@ public class UserService {
     
     // Get users by city
     public List<User> getUsersByCity(String city) {
-        return userRepository.findByAddressCity(city);
+        return userRepository.findByLocationCity(city);
     }
     
     // Get user statistics
