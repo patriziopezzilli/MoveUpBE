@@ -55,23 +55,11 @@ public interface UserRepository extends MongoRepository<User, String> {
     @Query("{'gameStatus.totalPoints': {$gte: ?0}}")
     List<User> findByTotalPointsGreaterThanEqual(int points);
     
-    // Find users by favorite sport
-    @Query("{'preferences.favoriteSports': ?0}")
-    List<User> findByFavoriteSport(String sport);
-    
     // Count total users
     long countByIsActiveTrue();
     
     // Count verified users
     long countByIsVerifiedTrue();
-    
-    // Find users with unread notifications
-    @Query("{'notificationSettings.hasUnreadNotifications': true}")
-    List<User> findUsersWithUnreadNotifications();
-    
-    // Find users by subscription type
-    @Query("{'subscriptionInfo.type': ?0}")
-    List<User> findBySubscriptionType(String subscriptionType);
     
     // Search users by name (case insensitive)
     @Query("{ $or: [ " +

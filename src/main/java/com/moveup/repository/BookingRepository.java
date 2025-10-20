@@ -81,7 +81,7 @@ public interface BookingRepository extends MongoRepository<Booking, String> {
     List<Booking> findCompletedBookings();
     
     // Find by Stripe Payment Intent ID
-    @Query("{'payment.stripePaymentIntentId': ?0}")
+    @Query("{'paymentIntentId': ?0}")
     Optional<Booking> findByStripePaymentIntentId(String paymentIntentId);
     
     // Count bookings by user

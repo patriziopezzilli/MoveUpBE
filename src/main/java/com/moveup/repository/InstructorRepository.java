@@ -18,20 +18,16 @@ public interface InstructorRepository extends MongoRepository<Instructor, String
     // Check if email exists
     boolean existsByEmail(String email);
     
-    // Find by username
+    // Find by username (searches by email field)
+    @Query("{ 'email' : ?0 }")
     Optional<Instructor> findByUsername(String username);
-    
-    // Check if username exists
+
+    // Check if username exists (checks by email field)
+    @Query(value = "{ 'email' : ?0 }", exists = true)
     boolean existsByUsername(String username);
     
     // Find by phone number
     Optional<Instructor> findByPhoneNumber(String phoneNumber);
-    
-    // Find by verification token
-    Optional<Instructor> findByVerificationToken(String verificationToken);
-    
-    // Find by reset password token
-    Optional<Instructor> findByResetPasswordToken(String resetPasswordToken);
     
     // Find active instructors
     List<Instructor> findByIsActiveTrue();
@@ -50,19 +46,19 @@ public interface InstructorRepository extends MongoRepository<Instructor, String
     List<Instructor> findByLocationCity(String city);
     
     // Find instructors by rating (greater than or equal)
-    @Query("{'professionalInfo.averageRating': {$gte: ?0}}")
-    List<Instructor> findByAverageRatingGreaterThanEqual(double rating);
+    @Query("{'rating': {$gte: ?0}}")
+    List<Instructor> findByRatingGreaterThanEqual(double rating);
     
     // Find instructors with certification
-    @Query("{'professionalInfo.certifications': {$exists: true, $not: {$size: 0}}}")
+    @Query("{'certifications': {$exists: true, $not: {$size: 0}}}")
     List<Instructor> findWithCertifications();
     
     // Find instructors by experience years (greater than or equal)
-    @Query("{'professionalInfo.yearsOfExperience': {$gte: ?0}}")
+    @Query("{'yearsOfExperience': {$gte: ?0}}")
     List<Instructor> findByExperienceGreaterThanEqual(int years);
     
     // Find instructors by hourly rate range
-    @Query("{'sports': {$elemMatch: {'hourlyRate': {$gte: ?0, $lte: ?1}}}}")
+    @Query("{'hourlyRate': {$gte: ?0, $lte: ?1}}")
     List<Instructor> findByHourlyRateRange(double minRate, double maxRate);
     
     // Search instructors by name (case insensitive)
@@ -85,7 +81,7 @@ public interface InstructorRepository extends MongoRepository<Instructor, String
     long countByIsAvailableTrue();
     
     // Find top-rated instructors
-    @Query(value = "{'isActive': true, 'isVerified': true}", sort = "{ 'professionalInfo.averageRating': -1 }")
+    @Query(value = "{'isActive': true, 'isVerified': true}", sort = "{ 'rating': -1 }")
     List<Instructor> findTopRatedInstructors(org.springframework.data.domain.Pageable pageable);
     
     // Find instructors with upcoming availability
@@ -93,14 +89,10 @@ public interface InstructorRepository extends MongoRepository<Instructor, String
     List<Instructor> findWithUpcomingAvailability(LocalDateTime fromDate);
     
     // Find instructors by location radius (requires geospatial indexing)
-    @Query("{'address.coordinates': {$near: {$geometry: {type: 'Point', coordinates: [?1, ?0]}, $maxDistance: ?2}}}")
+    @Query("{'location': {$near: {$geometry: {type: 'Point', coordinates: [?1, ?0]}, $maxDistance: ?2}}}")
     List<Instructor> findByLocationWithinRadius(double latitude, double longitude, double radiusInMeters);
     
     // Find instructors by multiple sports
-    @Query("{'sports.sportId': {$in: ?0}}")
+    @Query("{'specializations': {$in: ?0}}")
     List<Instructor> findBySportIds(List<String> sportIds);
-    
-    // Find premium instructors
-    @Query("{'subscriptionInfo.type': 'PREMIUM'}")
-    List<Instructor> findPremiumInstructors();
 }
