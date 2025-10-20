@@ -33,6 +33,10 @@ public interface LessonRepository extends MongoRepository<Lesson, String> {
     // Find lessons by duration
     List<Lesson> findByDuration(int duration);
     
+    // Find lessons with equipment provided
+    @Query("{'equipment': {$exists: true, $not: {$size: 0}}}")
+    List<Lesson> findWithEquipmentProvided();
+    
     // Find lessons by location (city)
     List<Lesson> findByLocationCity(String city);
     
@@ -72,6 +76,10 @@ public interface LessonRepository extends MongoRepository<Lesson, String> {
            "] }")
     List<Lesson> findByMultipleCriteria(List<String> sportIds, List<String> levels, double minPrice, double maxPrice);
     
+    // Find lessons by location radius (simplified - returns empty for now)
+    @Query("{'_id': {$exists: false}}") // Always returns empty
+    List<Lesson> findByLocationWithinRadius(double latitude, double longitude, double radiusInMeters);
+    
     // Count lessons by instructor
     long countByInstructorId(String instructorId);
     
@@ -84,4 +92,8 @@ public interface LessonRepository extends MongoRepository<Lesson, String> {
     // Find recent lessons
     @Query(value = "{'isActive': true}", sort = "{ 'createdAt': -1 }")
     List<Lesson> findRecentLessons(org.springframework.data.domain.Pageable pageable);
+    
+    // Find lessons with special offers (simplified - returns empty for now)
+    @Query("{'_id': {$exists: false}}") // Always returns empty
+    List<Lesson> findWithSpecialOffers();
 }

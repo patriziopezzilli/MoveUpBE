@@ -47,7 +47,7 @@ public interface InstructorRepository extends MongoRepository<Instructor, String
     
     // Find instructors by rating (greater than or equal)
     @Query("{'rating': {$gte: ?0}}")
-    List<Instructor> findByRatingGreaterThanEqual(double rating);
+    List<Instructor> findByAverageRatingGreaterThanEqual(double rating);
     
     // Find instructors with certification
     @Query("{'certifications': {$exists: true, $not: {$size: 0}}}")
