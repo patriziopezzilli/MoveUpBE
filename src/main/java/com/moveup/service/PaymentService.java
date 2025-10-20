@@ -41,7 +41,7 @@ public class PaymentService {
     
     private static final Logger logger = LoggerFactory.getLogger(PaymentService.class);
     
-    @Value("${stripe.secret.key}")
+    @Value("${stripe.secret.key:sk_test_dummy}")
     private String stripeSecretKey;
     
     @Value("${stripe.webhook.secret:}")
