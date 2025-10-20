@@ -4,8 +4,10 @@ import com.moveup.model.Booking;
 import com.moveup.model.Transaction;
 import com.moveup.model.User;
 import com.moveup.model.Wallet;
+import com.moveup.model.Payment;
 import com.moveup.repository.BookingRepository;
 import com.moveup.repository.UserRepository;
+import com.moveup.repository.PaymentRepository;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
@@ -27,6 +29,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.Optional;
+import org.json.JSONObject;
 
 @Service
 @Transactional
@@ -36,6 +41,9 @@ public class PaymentService {
     
     @Value("${stripe.secret.key}")
     private String stripeSecretKey;
+    
+    @Value("${stripe.webhook.secret:}")
+    private String stripeWebhookSecret;
     
     @Value("${stripe.currency:eur}")
     private String currency;
@@ -51,6 +59,9 @@ public class PaymentService {
     
     @Autowired
     private BookingRepository bookingRepository;
+    
+    @Autowired
+    private PaymentRepository paymentRepository;
     
     @PostConstruct
     public void init() {
@@ -80,6 +91,13 @@ public class PaymentService {
     
     // Process payment with payment method
     public String processPayment(double amount, String paymentMethodId, String bookingId) throws StripeException {
+        // Get booking to extract user and instructor info
+        Optional<Booking> bookingOpt = bookingRepository.findById(bookingId);
+        if (!bookingOpt.isPresent()) {
+            throw new RuntimeException("Booking not found: " + bookingId);
+        }
+        Booking booking = bookingOpt.get();
+        
         // Convert amount to cents
         long amountInCents = convertToCents(amount);
         
@@ -94,6 +112,13 @@ public class PaymentService {
                 .build();
         
         PaymentIntent intent = PaymentIntent.create(params);
+        
+        // Create and save Payment record
+        Payment payment = new Payment(bookingId, booking.getUserId(), amount);
+        payment.setInstructorId(booking.getInstructorId());
+        payment.setStripePaymentIntentId(intent.getId());
+        payment.setStatus("COMPLETED");
+        paymentRepository.save(payment);
         
         logger.info("Processed payment: {} for booking: {} amount: {} status: {}", 
                    intent.getId(), bookingId, amount, intent.getStatus());
@@ -321,7 +346,7 @@ public class PaymentService {
         
         // Update booking with payment intent ID
         booking.setPaymentIntentId(paymentIntent.getId());
-        booking.setPaymentStatus("AUTHORIZED");
+        booking.setPaymentStatus(Booking.PaymentStatus.AUTHORIZED);
         bookingRepository.save(booking);
         
         logger.info("Payment HELD for booking {}: amount={}, status={}", 
@@ -399,7 +424,7 @@ public class PaymentService {
         );
         
         // 6. Update booking status
-        booking.setPaymentStatus("COMPLETED");
+        booking.setPaymentStatus(Booking.PaymentStatus.CAPTURED);
         booking.setValidatedAt(java.time.LocalDateTime.now());
         bookingRepository.save(booking);
         
@@ -428,6 +453,136 @@ public class PaymentService {
         logger.info("Payment CANCELLED: {}", paymentIntentId);
         
         return cancelled;
+    }
+    
+    // Additional methods for PaymentController
+    public Payment processPayment(Payment payment) {
+        // Save payment to database
+        payment.setStatus("COMPLETED");
+        return paymentRepository.save(payment);
+    }
+    
+    public Optional<Payment> getPaymentById(String paymentId) {
+        return paymentRepository.findById(paymentId);
+    }
+    
+    public List<Payment> getPaymentsByUser(String userId) {
+        return paymentRepository.findByUserId(userId);
+    }
+    
+    public List<Payment> getPaymentsForBooking(String bookingId) {
+        return paymentRepository.findByBookingId(bookingId);
+    }
+    
+    public Payment refundPayment(String paymentId, String reason) {
+        // Find payment in database
+        Optional<Payment> paymentOpt = paymentRepository.findById(paymentId);
+        if (!paymentOpt.isPresent()) {
+            throw new RuntimeException("Payment not found: " + paymentId);
+        }
+
+        Payment payment = paymentOpt.get();
+
+        if (!"COMPLETED".equals(payment.getStatus())) {
+            throw new RuntimeException("Can only refund completed payments");
+        }
+
+        try {
+            // Create refund via Stripe
+            RefundCreateParams params = RefundCreateParams.builder()
+                    .setPaymentIntent(payment.getStripePaymentIntentId())
+                    .setAmount(convertToCents(payment.getAmount()))
+                    .setReason(RefundCreateParams.Reason.REQUESTED_BY_CUSTOMER)
+                    .putMetadata("refund_reason", reason != null ? reason : "Customer requested refund")
+                    .build();
+
+            Refund refund = Refund.create(params);
+
+            // Update payment status
+            payment.setStatus("REFUNDED");
+            paymentRepository.save(payment);
+
+            logger.info("Refund created for payment: {} amount: {} reason: {}",
+                       paymentId, payment.getAmount(), reason);
+
+            return payment;
+
+        } catch (StripeException e) {
+            logger.error("Failed to create refund for payment: {}", paymentId, e);
+            throw new RuntimeException("Refund failed: " + e.getMessage());
+        }
+    }
+    
+    public void handleStripeWebhook(String payload, String sigHeader) {
+        try {
+            Event event;
+
+            // Verify webhook signature if secret is configured
+            if (stripeWebhookSecret != null && !stripeWebhookSecret.isEmpty()) {
+                event = Webhook.constructEvent(payload, sigHeader, stripeWebhookSecret);
+            } else {
+                // Fallback for development: parse manually (less secure)
+                logger.warn("Stripe webhook secret not configured - using insecure parsing for development");
+                JSONObject jsonPayload = new JSONObject(payload);
+                // In produzione, questo dovrebbe sempre fallire
+                event = null; // Placeholder - in produzione usare sempre signature verification
+            }
+
+            String eventType = event != null ? event.getType() : "unknown";
+
+            logger.info("Processing Stripe webhook event: {}", eventType);
+
+            // Handle different event types
+            switch (eventType) {
+                case "payment_intent.succeeded":
+                    handlePaymentIntentSucceeded(event);
+                    break;
+                case "payment_intent.payment_failed":
+                    handlePaymentIntentFailed(event);
+                    break;
+                case "charge.dispute.created":
+                    handleChargeDispute(event);
+                    break;
+                default:
+                    logger.info("Unhandled webhook event type: {}", eventType);
+            }
+
+        } catch (Exception e) {
+            logger.error("Failed to process Stripe webhook", e);
+            throw new RuntimeException("Webhook processing failed: " + e.getMessage());
+        }
+    }    private void handlePaymentIntentSucceeded(JSONObject paymentIntent) {
+        String paymentIntentId = paymentIntent.getString("id");
+        logger.info("Payment intent succeeded: {}", paymentIntentId);
+
+        // Update payment status if exists
+        Optional<Payment> paymentOpt = paymentRepository.findByStripePaymentIntentId(paymentIntentId);
+        if (paymentOpt.isPresent()) {
+            Payment payment = paymentOpt.get();
+            payment.setStatus("COMPLETED");
+            paymentRepository.save(payment);
+        }
+    }
+
+    private void handlePaymentIntentFailed(JSONObject paymentIntent) {
+        String paymentIntentId = paymentIntent.getString("id");
+        logger.warn("Payment intent failed: {}", paymentIntentId);
+
+        // Update payment status if exists
+        Optional<Payment> paymentOpt = paymentRepository.findByStripePaymentIntentId(paymentIntentId);
+        if (paymentOpt.isPresent()) {
+            Payment payment = paymentOpt.get();
+            payment.setStatus("FAILED");
+            paymentRepository.save(payment);
+        }
+    }
+
+    private void handleChargeDispute(JSONObject dispute) {
+        String paymentIntentId = dispute.optString("payment_intent");
+        logger.warn("Charge dispute created for payment intent: {}", paymentIntentId);
+
+        // Could implement dispute handling logic here
+        // For now, just log the event
     }
     
     // Helper class for payment summary

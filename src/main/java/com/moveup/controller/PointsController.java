@@ -155,16 +155,15 @@ public class PointsController {
             @RequestParam String userId
     ) {
         try {
-            // Questa logica andrebbe nel PointsService, ma per ora la facciamo qui
-            // TODO: spostare in PointsService.getUserPointsInfo()
+            PointsService.UserPointsInfo pointsInfo = pointsService.getUserPointsInfo(userId);
             
             return ResponseEntity.ok(Map.of(
                 "success", true,
-                "userId", userId,
-                "points", 0, // TODO: get from user
-                "level", 1,
-                "levelName", "Principiante",
-                "levelBadge", "🌱"
+                "userId", pointsInfo.getUserId(),
+                "points", pointsInfo.getPoints(),
+                "level", pointsInfo.getLevel(),
+                "levelName", pointsInfo.getLevelName(),
+                "levelBadge", pointsInfo.getLevelBadge()
             ));
             
         } catch (Exception e) {

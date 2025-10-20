@@ -6,6 +6,7 @@ import com.moveup.model.Booking;
 import com.moveup.repository.BookingRepository;
 import com.eatthepath.pushy.apns.*;
 import com.eatthepath.pushy.apns.util.*;
+import com.eatthepath.pushy.apns.auth.ApnsSigningKey;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -282,15 +283,13 @@ public class LiveActivityService {
     /**
      * Create LiveActivityInfo embedded object
      */
-    private Object createLiveActivityInfo(String activityId, String pushToken, String status) {
-        // This would create the LiveActivityInfo embedded object
-        // For now, returning a placeholder
-        return new Object() {
-            public String getActivityId() { return activityId; }
-            public String getPushToken() { return pushToken; }
-            public String getStatus() { return status; }
-            public LocalDateTime getStartedAt() { return LocalDateTime.now(); }
-            public LocalDateTime getLastUpdate() { return LocalDateTime.now(); }
-        };
+    private Booking.LiveActivityInfo createLiveActivityInfo(String activityId, String pushToken, String status) {
+        Booking.LiveActivityInfo liveActivity = new Booking.LiveActivityInfo();
+        liveActivity.setActivityId(activityId);
+        liveActivity.setPushToken(pushToken);
+        liveActivity.setStatus(status);
+        liveActivity.setStartedAt(LocalDateTime.now());
+        liveActivity.setLastUpdate(LocalDateTime.now());
+        return liveActivity;
     }
 }

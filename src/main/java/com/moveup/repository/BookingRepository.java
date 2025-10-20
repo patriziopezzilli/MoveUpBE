@@ -128,4 +128,16 @@ public interface BookingRepository extends MongoRepository<Booking, String> {
     // Find booking by Wallet Pass Serial Number
     @Query("{'walletPass.serialNumber': ?0}")
     Optional<Booking> findByWalletPassSerialNumber(String serialNumber);
+    
+    // Count bookings by user and status
+    long countByUserIdAndStatus(String userId, Booking.BookingStatus status);
+    
+    // Find bookings by user and status ordered by created date desc
+    List<Booking> findByUserIdAndStatusOrderByCreatedAtDesc(String userId, Booking.BookingStatus status);
+    
+    // Find bookings by instructor created after date
+    List<Booking> findByInstructorIdAndCreatedAtAfter(String instructorId, LocalDateTime date);
+    
+    // Find bookings by instructor created between dates
+    List<Booking> findByInstructorIdAndCreatedAtBetween(String instructorId, LocalDateTime start, LocalDateTime end);
 }

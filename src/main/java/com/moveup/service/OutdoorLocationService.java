@@ -25,6 +25,43 @@ public class OutdoorLocationService {
             String locationType,
             String sport
     ) {
+        // Converti coordinate in GeoJsonPoint
+        GeoJsonPoint userLocation = new GeoJsonPoint(userLng, userLat);
+        double radiusInMeters = (radiusKm != null ? radiusKm : 10.0) * 1000;
+        
+        List<OutdoorLocation> locations = locationRepository.findByLocationNear(
+            userLocation, 
+            radiusInMeters
+        );
+        
+        // Filtra per tipo se specificato
+        if (locationType != null && !locationType.isEmpty()) {
+            locations = locations.stream()
+                .filter(loc -> loc.getType() != null && loc.getType().equalsIgnoreCase(locationType))
+                .collect(Collectors.toList());
+        }
+        
+        // Converti in risultati con distanza calcolata
+        List<OutdoorLocationResult> results = new ArrayList<>();
+        for (OutdoorLocation location : locations) {
+            double distance = calculateDistance(
+                userLat, userLng,
+                location.getLatitude(),
+                location.getLongitude()
+            );
+            
+            List<String> photos = getLocationPhotos(location);
+            List<String> amenities = getAmenities(location);
+            
+            results.add(new OutdoorLocationResult(location, distance, photos, amenities));
+        }
+        
+        // Ordina per distanza
+        results.sort(Comparator.comparing(OutdoorLocationResult::getDistance));
+        
+        return results;
+    }
+        /*
         List<OutdoorLocation> locations = locationRepository.findByLocationNear(
             userLat, 
             userLng, 
@@ -64,6 +101,7 @@ public class OutdoorLocationService {
             .collect(Collectors.toList());
         
         return results;
+        */
     }
     
     /**
@@ -111,6 +149,9 @@ public class OutdoorLocationService {
             Double userLng,
             Double radiusKm
     ) {
+        // TODO: Implement with proper OutdoorLocation model fields
+        return new HashMap<>();
+        /*
         List<OutdoorLocation> allLocations = locationRepository.findByLocationNear(
             userLat, userLng, radiusKm
         );
@@ -129,6 +170,7 @@ public class OutdoorLocationService {
             ));
         
         return grouped;
+        */
     }
     
     // Haversine distance calculation
@@ -144,19 +186,23 @@ public class OutdoorLocationService {
     }
     
     private List<String> getLocationPhotos(OutdoorLocation location) {
-        // TODO: integrate with photo service
-        return List.of(
-            location.getPhotoUrl() != null ? location.getPhotoUrl() : "default_park.jpg"
-        );
+        String photoBase64 = location.getPhotoBase64();
+        return photoBase64 != null ? List.of(photoBase64) : List.of();
     }
     
     private List<String> getAmenities(OutdoorLocation location) {
         List<String> amenities = new ArrayList<>();
-        if (location.getHasParking()) amenities.add("Parking");
+        if (location.hasParking()) amenities.add("Parking");
+        if (location.hasRestrooms()) amenities.add("Restrooms");
+        if (location.hasWater()) amenities.add("Water");
+        if (location.hasShade()) amenities.add("Shade");
+        return amenities;
+    }
         if (location.getHasRestrooms()) amenities.add("Restrooms");
         if (location.getHasWater()) amenities.add("Water");
         if (location.getHasShade()) amenities.add("Shade");
         return amenities;
+        */
     }
     
     // Inner classes
@@ -210,7 +256,7 @@ public class OutdoorLocationService {
         
         public String getName() { return name; }
         public String getType() { return type; }
-        public String getPhotoUrl() { return photoUrl; }
+        public String getPhotoBase64() { return photoUrl; } // Per ora restituisce il nome file, poi sarà Base64
         public double getLatitude() { return latitude; }
         public double getLongitude() { return longitude; }
         public String getDescription() { return description; }

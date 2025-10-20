@@ -102,6 +102,18 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
     
+    // Send welcome notification to new users
+    public void sendWelcomeNotification(User user) {
+        Notification notification = new Notification();
+        notification.setRecipientId(user.getId());
+        notification.setTitle("Benvenuto in MoveUp!");
+        notification.setMessage("Grazie per esserti registrato! Inizia il tuo viaggio sportivo prenotando la tua prima lezione.");
+        notification.setType(NotificationType.WELCOME);
+        notification.setPriority(NotificationPriority.HIGH);
+        
+        notificationRepository.save(notification);
+    }
+    
     // Send new review notification
     public void sendNewReviewNotification(String instructorId, String reviewId, int rating) {
         Notification notification = new Notification();
@@ -245,6 +257,37 @@ public class NotificationService {
         stats.setReadNotifications(totalNotifications - unreadNotifications);
         
         return stats;
+    }
+    
+    /**
+     * Notify instructor that customer has checked in via QR code
+     */
+    public void notifyInstructorCheckIn(String instructorId, String customerId, String bookingId) {
+        Notification notification = new Notification();
+        notification.setRecipientId(instructorId);
+        notification.setTitle("Check-in Effettuato");
+        notification.setMessage("Il cliente ha effettuato il check-in tramite QR code");
+        notification.setType(NotificationType.BOOKING_CONFIRMATION);
+        notification.setRelatedEntityId(bookingId);
+        notification.setRelatedEntityType("BOOKING");
+        notification.setPriority(NotificationPriority.HIGH);
+        
+        notificationRepository.save(notification);
+    }
+    
+    // Get user notifications
+    public List<Notification> getUserNotifications(String userId) {
+        return notificationRepository.findByRecipientIdOrderByCreatedAtDesc(userId);
+    }
+    
+    // Get unread notification count for user
+    public long getUnreadCount(String userId) {
+        return notificationRepository.countByRecipientIdAndIsRead(userId, false);
+    }
+    
+    // Delete notification
+    public void deleteNotification(String notificationId) {
+        notificationRepository.deleteById(notificationId);
     }
     
     // Helper class for notification statistics

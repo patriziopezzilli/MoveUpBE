@@ -115,4 +115,10 @@ public interface NotificationRepository extends MongoRepository<Notification, St
     
     // Find notifications by recipient in date range
     List<Notification> findByRecipientIdAndCreatedAtBetween(String recipientId, LocalDateTime start, LocalDateTime end);
+    
+    // Get user notifications ordered by creation date (newest first)
+    List<Notification> findByRecipientIdOrderByCreatedAtDesc(String recipientId);
+    
+    // Count unread notifications for user
+    long countByRecipientIdAndIsRead(String recipientId, boolean isRead);
 }

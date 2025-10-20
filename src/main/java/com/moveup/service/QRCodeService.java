@@ -237,20 +237,28 @@ public class QRCodeService {
         
         // Update booking with check-in info
         booking.setCheckin(createCheckInInfo(now, location, distance));
-        booking.setStatus("IN_PROGRESS");
+        booking.setStatus(Booking.BookingStatus.CONFIRMED);
         booking.setValidatedAt(now);
         
         // Process payment (capture authorized amount)
         if (booking.getPaymentIntentId() != null) {
             try {
-                String transferId = stripeService.capturePaymentAndTransfer(
-                    booking.getPaymentIntentId(),
-                    booking.getInstructorId(),
-                    booking.getTotalAmount()
-                );
-                booking.setStripeTransferId(transferId);
-                booking.setPaymentStatus("CAPTURED");
-                logger.info("Payment captured and transferred. Transfer ID: {}", transferId);
+                // Get instructor's user ID for Stripe transfer
+                Optional<Instructor> instructorOpt = instructorRepository.findById(booking.getInstructorId());
+                if (instructorOpt.isPresent()) {
+                    Instructor instructor = instructorOpt.get();
+                    Map<String, Object> transferResult = stripeService.capturePaymentAndTransfer(
+                        booking.getPaymentIntentId(),
+                        instructor.getUserId(), // Use instructor's user ID
+                        booking.getTotalAmount(),
+                        "Lesson payment - Booking " + booking.getId(),
+                        "booking_" + booking.getId()
+                    );
+                    String transferId = (String) transferResult.get("transferId");
+                    booking.setStripeTransferId(transferId);
+                }
+                booking.setPaymentStatus(Booking.PaymentStatus.CAPTURED);
+                logger.info("Payment captured and transferred for booking: {}", booking.getId());
             } catch (Exception e) {
                 logger.error("Payment capture failed for booking: {}", booking.getId(), e);
                 // Don't block check-in if payment fails, log for manual review
@@ -300,18 +308,26 @@ public class QRCodeService {
     }
     
     /**
-     * Create CheckInInfo object
+     * Create check-in info embedded document
      */
-    private Object createCheckInInfo(LocalDateTime checkedInAt, 
+    private Booking.CheckInInfo createCheckInInfo(LocalDateTime checkedInAt, 
                                     QRCodeValidationRequest.LocationData location, 
                                     double distance) {
-        // This would create the CheckInInfo embedded object
-        // For now, returning a placeholder - full implementation would use reflection or builder
-        return new Object() {
-            public LocalDateTime getCheckedInAt() { return checkedInAt; }
-            public boolean isScannedQR() { return true; }
-            public double getDistance() { return distance; }
-        };
+        Booking.CheckInInfo checkInInfo = new Booking.CheckInInfo();
+        checkInInfo.setCheckedInAt(checkedInAt);
+        checkInInfo.setScannedQR(true);
+        checkInInfo.setDistance(distance);
+        
+        // Create GeoLocation
+        if (location != null) {
+            Booking.GeoLocation geoLocation = new Booking.GeoLocation(
+                location.getLongitude(), 
+                location.getLatitude()
+            );
+            checkInInfo.setLocation(geoLocation);
+        }
+        
+        return checkInInfo;
     }
     
     /**

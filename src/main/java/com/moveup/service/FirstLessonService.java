@@ -39,7 +39,7 @@ public class FirstLessonService {
             .orElseThrow(() -> new RuntimeException("Utente non trovato"));
         
         // Check se ha già usato la prima lezione gratis
-        if (user.getHasUsedFirstLesson() != null && user.getHasUsedFirstLesson()) {
+        if (user.getHasUsedFirstLesson()) {
             return new FirstLessonEligibility(
                 false,
                 "Hai già usato la tua prima lezione gratis",
@@ -140,7 +140,7 @@ public class FirstLessonService {
             );
             
             // Update booking
-            booking.setPaymentStatus("CAPTURED");
+            booking.setPaymentStatus(Booking.PaymentStatus.CAPTURED);
             booking.setNotes("Prima lezione gratis - MoveUp copre il costo");
             
             return new FirstLessonPaymentResult(

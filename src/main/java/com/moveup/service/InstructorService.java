@@ -33,6 +33,9 @@ public class InstructorService {
     @Autowired
     private ReviewService reviewService;
     
+    @Autowired
+    private UserService userService;
+    
     // Create new instructor
     public Instructor createInstructor(Instructor instructor) {
         // Check if email already exists
@@ -111,24 +114,8 @@ public class InstructorService {
     
     // Verify instructor email
     public boolean verifyEmail(String verificationToken) {
-        // TODO: Verification should be done through User entity, not Instructor
-        throw new RuntimeException("Email verification not implemented - use User service");
-        /*
-        Optional<Instructor> instructorOpt = instructorRepository.findByVerificationToken(verificationToken);
-        
-        if (instructorOpt.isPresent()) {
-            Instructor instructor = instructorOpt.get();
-            instructor.setVerified(true);
-            instructor.setVerificationToken(null);
-            instructor.setVerifiedAt(LocalDateTime.now());
-            instructorRepository.save(instructor);
-            
-            // Send welcome email or notify admin for approval
-            return true;
-        }
-        */
-        
-        return false;
+        // Delegate email verification to UserService
+        return userService.verifyEmail(verificationToken);
     }
     
     // Approve instructor (admin function)
@@ -184,18 +171,8 @@ public class InstructorService {
         Instructor instructor = instructorRepository.findById(instructorId)
                 .orElseThrow(() -> new RuntimeException("Istruttore non trovato"));
         
-        // TODO: InstructorSport class doesn't exist - using simple specializations list
         instructor.getSpecializations().add(sport.getId());
         instructorRepository.save(instructor);
-        /*
-        Instructor.InstructorSport instructorSport = new Instructor.InstructorSport();
-        instructorSport.setSportId(sport.getId());
-        instructorSport.setHourlyRate(hourlyRate);
-        instructorSport.setExperienceYears(0); // Can be updated later
-        
-        instructor.getSports().add(instructorSport);
-        instructorRepository.save(instructor);
-        */
     }
     
     // Update rating
@@ -274,16 +251,8 @@ public class InstructorService {
         Instructor instructor = instructorRepository.findById(instructorId)
                 .orElseThrow(() -> new RuntimeException("Istruttore non trovato"));
         
-        // TODO: Password management should be done through User entity, not Instructor
-        throw new RuntimeException("Password change not implemented - use User service");
-        /*
-        if (!passwordEncoder.matches(currentPassword, instructor.getPassword())) {
-            throw new RuntimeException("Password attuale non corretta");
-        }
-        
-        instructor.setPassword(passwordEncoder.encode(newPassword));
-        instructorRepository.save(instructor);
-        */
+        // Delegate password change to UserService
+        userService.changePassword(instructor.getUserId(), currentPassword, newPassword);
     }
     
     // Deactivate instructor

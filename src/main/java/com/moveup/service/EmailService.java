@@ -1,8 +1,6 @@
 package com.moveup.service;
 
-import com.moveup.model.User;
-import com.moveup.model.Instructor;
-import com.moveup.model.Booking;
+import com.moveup.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -22,6 +20,9 @@ public class EmailService {
     
     @Autowired
     private JavaMailSender emailSender;
+    
+    @Autowired
+    private UserRepository userRepository;
     
     @Value("${app.frontend.url:http://localhost:3000}")
     private String frontendUrl;
@@ -108,22 +109,21 @@ public class EmailService {
     
     // Send instructor verification email
     public void sendInstructorVerificationEmail(Instructor instructor) {
-        // TODO: Verification should be done through User entity, not Instructor
-        throw new RuntimeException("Instructor verification not implemented - use User service");
-        /*
         try {
-            String verificationUrl = frontendUrl + "/instructor/verify-email?token=" + instructor.getVerificationToken();
+            // Get verification token from associated User
+            User user = userRepository.findById(instructor.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found for instructor: " + instructor.getId()));
+            
+            String verificationUrl = frontendUrl + "/instructor/verify-email?token=" + user.getVerificationToken();
             
             String subject = "Verifica il tuo account Istruttore - MoveUp";
             String body = buildInstructorVerificationEmailBody(instructor.getFirstName(), verificationUrl);
             
             sendHtmlEmail(instructor.getEmail(), subject, body);
-            logger.info("Instructor verification email sent to: {}", instructor.getEmail());
-            
         } catch (Exception e) {
-            logger.error("Failed to send instructor verification email to: {}", instructor.getEmail(), e);
+            // Log error but don't throw - email sending shouldn't break the flow
+            System.err.println("Failed to send instructor verification email: " + e.getMessage());
         }
-        */
     }
     
     // Generic method to send HTML emails

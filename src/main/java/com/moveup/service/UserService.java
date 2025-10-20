@@ -157,7 +157,7 @@ public class UserService {
         
         // Optional fields
         totalFields += 4;
-        if (user.getProfileImageUrl() != null && !user.getProfileImageUrl().isEmpty()) completedFields++;
+        if (user.getProfileImageBase64() != null && !user.getProfileImageBase64().isEmpty()) completedFields++;
         if (user.getLocation() != null) completedFields++;
         if (user.getSportSkillLevels() != null && !user.getSportSkillLevels().isEmpty()) completedFields++;
         if (user.getMaxDistance() != null) completedFields++;

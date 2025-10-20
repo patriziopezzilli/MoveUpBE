@@ -23,7 +23,7 @@ public class OutdoorLocation {
     
     private String address;
     private List<String> amenities = new ArrayList<>();
-    private List<String> photos = new ArrayList<>();
+    private List<String> photosBase64 = new ArrayList<>(); // Foto salvate come Base64
     private Double rating;
     
     // Constructors
@@ -57,9 +57,45 @@ public class OutdoorLocation {
     public List<String> getAmenities() { return amenities; }
     public void setAmenities(List<String> amenities) { this.amenities = amenities; }
     
-    public List<String> getPhotos() { return photos; }
-    public void setPhotos(List<String> photos) { this.photos = photos; }
+    public List<String> getPhotosBase64() { return photosBase64; }
+    public void setPhotosBase64(List<String> photosBase64) { this.photosBase64 = photosBase64; }
     
     public Double getRating() { return rating; }
     public void setRating(Double rating) { this.rating = rating; }
+    
+    // Utility methods for amenities
+    public boolean hasParking() {
+        return amenities != null && amenities.contains("parking");
+    }
+    
+    public boolean hasRestrooms() {
+        return amenities != null && amenities.contains("restrooms");
+    }
+    
+    public boolean hasWater() {
+        return amenities != null && amenities.contains("water");
+    }
+    
+    public boolean hasShade() {
+        return amenities != null && amenities.contains("shade");
+    }
+    
+    public String getPhotoBase64() {
+        return photosBase64 != null && !photosBase64.isEmpty() ? photosBase64.get(0) : null;
+    }
+    
+    // Utility methods for location
+    public double getLatitude() {
+        return location != null ? location.getY() : 0.0;
+    }
+    
+    public double getLongitude() {
+        return location != null ? location.getX() : 0.0;
+    }
+    
+    public List<String> getSuitableFor() {
+        // This could be derived from type or additional field
+        // For now, return empty list
+        return new ArrayList<>();
+    }
 }

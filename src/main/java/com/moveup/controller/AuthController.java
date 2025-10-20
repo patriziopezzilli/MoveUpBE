@@ -8,6 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import jakarta.validation.Valid;
 import java.util.Map;
 
@@ -63,7 +66,6 @@ public class AuthController {
         }
     }
     
-    // Login user
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> loginUser(@RequestBody Map<String, String> request) {
         try {
@@ -80,14 +82,16 @@ public class AuthController {
                             user.setPassword(null);
                             user.setVerificationToken(null);
                             
-                            return ResponseEntity.ok(Map.of(
-                                "message", "Login effettuato con successo",
-                                "user", user,
-                                "token", "jwt_token_would_be_here"
-                            ));
+                            Map<String, Object> response = new HashMap<>();
+                            response.put("message", "Login effettuato con successo");
+                            response.put("user", user);
+                            response.put("token", "jwt_token_would_be_here");
+                            
+                            return ResponseEntity.ok(response);
                         } else {
-                            return ResponseEntity.badRequest()
-                                    .body(Map.of("error", "Account non attivato o non verificato"));
+                            Map<String, Object> errorResponse = new HashMap<>();
+                            errorResponse.put("error", "Account non attivato o non verificato");
+                            return ResponseEntity.badRequest().body(errorResponse);
                         }
                     })
                     .orElse(ResponseEntity.badRequest()
@@ -98,8 +102,6 @@ public class AuthController {
                     .body(Map.of("error", "Errore durante il login"));
         }
     }
-    
-    // Verify email
     @PostMapping("/verify-email")
     public ResponseEntity<Map<String, String>> verifyEmail(@RequestBody Map<String, String> request) {
         try {

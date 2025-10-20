@@ -54,6 +54,11 @@ public class Lesson {
     private String requirements;
     private String cancellationPolicy;
     
+    // Statistics fields
+    private int bookingCount = 0;
+    private int viewCount = 0;
+    private double averageRating = 0.0;
+    
     @CreatedDate
     private LocalDateTime createdAt;
     
@@ -106,6 +111,13 @@ public class Lesson {
     public SkillLevel getSkillLevel() { return skillLevel; }
     public void setSkillLevel(SkillLevel skillLevel) { this.skillLevel = skillLevel; }
     
+    public int getLevel() { return skillLevel != null ? skillLevel.ordinal() + 1 : 0; }
+    public void setLevel(int level) { 
+        if (level >= 1 && level <= SkillLevel.values().length) {
+            this.skillLevel = SkillLevel.values()[level - 1];
+        }
+    }
+    
     public List<String> getEquipment() { return equipment; }
     public void setEquipment(List<String> equipment) { this.equipment = equipment; }
     
@@ -123,6 +135,15 @@ public class Lesson {
     
     public String getCancellationPolicy() { return cancellationPolicy; }
     public void setCancellationPolicy(String cancellationPolicy) { this.cancellationPolicy = cancellationPolicy; }
+    
+    public int getBookingCount() { return bookingCount; }
+    public void setBookingCount(int bookingCount) { this.bookingCount = bookingCount; }
+    
+    public int getViewCount() { return viewCount; }
+    public void setViewCount(int viewCount) { this.viewCount = viewCount; }
+    
+    public double getAverageRating() { return averageRating; }
+    public void setAverageRating(double averageRating) { this.averageRating = averageRating; }
     
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
@@ -143,8 +164,8 @@ public class Lesson {
         }
     }
     
-    public void addImage(String imageUrl) {
-        images.add(imageUrl);
+    public void addImage(String imageBase64) {
+        images.add(imageBase64);
     }
     
     public String getDurationFormatted() {
@@ -159,5 +180,14 @@ public class Lesson {
                 return hours + "h " + minutes + "min";
             }
         }
+    }
+    
+    // Business methods for statistics
+    public void incrementBookingCount() {
+        this.bookingCount++;
+    }
+    
+    public void incrementViewCount() {
+        this.viewCount++;
     }
 }

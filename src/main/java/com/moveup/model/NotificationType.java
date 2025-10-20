@@ -13,7 +13,8 @@ public enum NotificationType {
     INSTRUCTOR_MESSAGE("Messaggio Istruttore"),
     SYSTEM_UPDATE("Aggiornamento Sistema"),
     MARKETING("Marketing"),
-    SECURITY("Sicurezza");
+    SECURITY("Sicurezza"),
+    WELCOME("Benvenuto");
     
     private final String displayName;
     

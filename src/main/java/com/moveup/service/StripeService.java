@@ -7,11 +7,15 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.Account;
 import com.stripe.model.ExternalAccount;
 import com.stripe.model.Transfer;
+import com.stripe.model.PaymentIntent;
 import com.stripe.param.AccountCreateParams;
 import com.stripe.param.TransferCreateParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +23,8 @@ import java.util.Map;
 @Service
 @Transactional
 public class StripeService {
+    
+    private static final Logger logger = LoggerFactory.getLogger(StripeService.class);
     
     @Autowired
     private WalletService walletService;
@@ -167,6 +173,81 @@ public class StripeService {
         result.put("accountId", account.getId());
         result.put("externalAccountId", externalAccount.getId());
         result.put("success", true);
+        
+        return result;
+    }
+    
+    /**
+     * Capture payment and transfer funds to trainer's connected account
+     * This method combines payment capture with automatic transfer to trainer
+     */
+    public Map<String, Object> capturePaymentAndTransfer(
+            String paymentIntentId,
+            String trainerUserId,
+            Double amount,
+            String description,
+            String transferGroup
+    ) throws StripeException {
+        
+        Map<String, Object> result = new HashMap<>();
+        
+        try {
+            // First, get the trainer's wallet to find their Stripe connected account
+            Wallet trainerWallet = walletService.getOrCreateWallet(trainerUserId);
+            
+            if (trainerWallet.getStripeConnectedAccountId() == null) {
+                throw new RuntimeException("Trainer does not have a Stripe connected account setup");
+            }
+            
+            // Capture the payment intent
+            PaymentIntent intent = PaymentIntent.retrieve(paymentIntentId);
+            
+            if (!"requires_capture".equals(intent.getStatus())) {
+                throw new RuntimeException("Payment intent is not in a capturable state. Current status: " + intent.getStatus());
+            }
+            
+            // Capture the payment
+            PaymentIntent capturedIntent = intent.capture();
+            result.put("paymentIntent", capturedIntent);
+            
+            // If capture was successful, transfer funds to trainer
+            if ("succeeded".equals(capturedIntent.getStatus())) {
+                // Calculate transfer amount (after platform fees)
+                // For now, transfer 80% to trainer, keep 20% as platform fee
+                double platformFee = amount * 0.20;
+                double transferAmount = amount - platformFee;
+                
+                Transfer transfer = transferToTrainer(
+                    trainerWallet.getStripeConnectedAccountId(),
+                    transferAmount,
+                    description + " - Platform fee: " + String.format("%.2f", platformFee) + " EUR",
+                    transferGroup
+                );
+                
+                result.put("transfer", transfer);
+                result.put("transferAmount", transferAmount);
+                result.put("platformFee", platformFee);
+                result.put("success", true);
+                
+                logger.info("Successfully captured payment {} and transferred {} EUR to trainer {}", 
+                           paymentIntentId, transferAmount, trainerUserId);
+                
+            } else {
+                result.put("success", false);
+                result.put("error", "Payment capture failed with status: " + capturedIntent.getStatus());
+            }
+            
+        } catch (StripeException e) {
+            logger.error("Stripe error during capture and transfer: {}", e.getMessage());
+            result.put("success", false);
+            result.put("error", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            logger.error("Error during capture and transfer: {}", e.getMessage());
+            result.put("success", false);
+            result.put("error", e.getMessage());
+            throw new RuntimeException("Failed to capture payment and transfer funds", e);
+        }
         
         return result;
     }

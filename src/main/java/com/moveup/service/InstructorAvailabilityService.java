@@ -38,8 +38,62 @@ public class InstructorAvailabilityService {
             String sport,
             Integer maxResults
     ) {
-        // TODO: Implement instant booking with proper repository methods
-        return new ArrayList<>(); // Return empty list for now
+        // 1. Trova trainer nel raggio geografico
+        double radiusMeters = (radiusKm != null ? radiusKm : 10.0) * 1000; // converti km in metri
+        List<Instructor> nearbyInstructors = instructorRepository.findByLocationWithinRadius(
+            userLat, userLng, radiusMeters
+        );
+
+        // 2. Filtra per sport se specificato
+        if (sport != null && !sport.isEmpty()) {
+            nearbyInstructors = nearbyInstructors.stream()
+                .filter(instructor -> instructor.getSpecializations() != null &&
+                                    instructor.getSpecializations().contains(sport))
+                .collect(Collectors.toList());
+        }
+
+        // 3. Filtra trainer attivi e disponibili
+        nearbyInstructors = nearbyInstructors.stream()
+            .filter(instructor -> instructor.isActive() && instructor.isAvailable())
+            .collect(Collectors.toList());
+
+        // 4. Crea risultati con calcolo distanza e ETA
+        List<InstantBookingResult> results = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+
+        for (Instructor instructor : nearbyInstructors) {
+            // Calcola distanza
+            double distance = calculateDistance(
+                userLat, userLng,
+                instructor.getLocation().getLatitude(),
+                instructor.getLocation().getLongitude()
+            );
+
+            // ETA stimato: 5 min + (distanza * 2 min/km per traffico)
+            int etaMinutes = 5 + (int)(distance * 2);
+
+            // Prossimo slot disponibile (semplificato: ora + ETA)
+            LocalTime nextSlot = now.plusMinutes(etaMinutes).toLocalTime();
+
+            // Prezzo (usa tariffa oraria come base)
+            Double price = instructor.getHourlyRate();
+
+            results.add(new InstantBookingResult(
+                instructor,
+                distance,
+                etaMinutes,
+                nextSlot,
+                instructor.getLocation().getAddress(),
+                price
+            ));
+        }
+
+        // 5. Ordina per ETA e limita risultati
+        return results.stream()
+            .sorted(Comparator.comparing(InstantBookingResult::getEtaMinutes))
+            .limit(maxResults != null ? maxResults : 10)
+            .collect(Collectors.toList());
+    }
         
         /*
         // 1. Trova trainer nel raggio geografico
@@ -222,8 +276,9 @@ public class InstructorAvailabilityService {
     
     private Double calculatePriceForSport(Instructor instructor, String sport) {
         // Logica per calcolare il prezzo basato sullo sport
-        // Per ora ritorna un prezzo di default
-        return instructor.getHourlyRate() != null ? instructor.getHourlyRate() : 40.0;
+        // Per ora ritorna un prezzo di default basato sulla tariffa oraria
+        double rate = instructor.getHourlyRate();
+        return rate > 0 ? rate : 40.0;
     }
     
     // Inner class per il risultato

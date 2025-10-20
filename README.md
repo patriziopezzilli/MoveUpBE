@@ -73,6 +73,15 @@ cd MoveUpBE
 ```
 
 ### 2. Configura MongoDB
+
+#### Opzione A: MongoDB Atlas (Cloud - Raccomandato)
+1. Crea un account su [MongoDB Atlas](https://www.mongodb.com/atlas)
+2. Crea un nuovo cluster
+3. Nella sezione "Database Access", crea un utente database
+4. Nella sezione "Network Access", aggiungi il tuo IP (o 0.0.0.0/0 per accesso globale)
+5. Nella sezione "Clusters", clicca "Connect" e copia la connection string
+
+#### Opzione B: MongoDB Locale (Sviluppo)
 ```bash
 # Avvia MongoDB localmente
 mongod --dbpath /path/to/your/db
@@ -104,20 +113,27 @@ certificates/
 
 ### 5. Configura le variabili d'ambiente
 
-Crea un file `application-local.properties` o usa variabili d'ambiente:
+Crea un file `.env` nella root del progetto (vedi `.env.example` per il template):
 
-```properties
-# Database
-spring.data.mongodb.uri=mongodb://localhost:27017/moveup
-spring.data.mongodb.database=moveup
+```bash
+```bash
+# Database - MongoDB Atlas
+MONGODB_URI=mongodb+srv://moveup:YOUR_ACTUAL_PASSWORD@moveup.usx7u6w.mongodb.net/?retryWrites=true&w=majority&appName=moveup
+
+# Sostituisci YOUR_ACTUAL_PASSWORD con la password del tuo database MongoDB Atlas
+# La password è la stessa che usi per accedere al cluster Atlas
+```
+
+# Database - MongoDB Locale (alternativa)
+# MONGODB_URI=mongodb://localhost:27017/moveup
 
 # Redis (opzionale)
-spring.data.redis.host=localhost
-spring.data.redis.port=6379
+REDIS_URL=redis://localhost:6379
 
 # JWT
-jwt.secret=your-super-secret-jwt-key-min-256-bits
-jwt.expiration=86400000
+JWT_SECRET=your-super-secret-jwt-key-change-in-production
+JWT_EXPIRATION=900000
+```
 
 # Stripe
 stripe.api.key=sk_test_your_stripe_secret_key
@@ -140,6 +156,22 @@ spring.mail.username=your_email@gmail.com
 spring.mail.password=your_app_password
 spring.mail.properties.mail.smtp.auth=true
 spring.mail.properties.mail.smtp.starttls.enable=true
+
+### 6. Testa la configurazione
+
+```bash
+# Installa Maven (se non presente)
+brew install maven
+
+# Compila il progetto
+mvn clean compile
+
+# Avvia l'applicazione
+mvn spring-boot:run
+
+# L'app dovrebbe avviarsi sulla porta 8080
+# Verifica che si connetta a MongoDB Atlas controllando i log
+```
 
 # Server
 server.port=8080

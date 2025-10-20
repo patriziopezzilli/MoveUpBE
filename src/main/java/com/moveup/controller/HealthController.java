@@ -34,7 +34,9 @@ public class HealthController {
                 "payments", "Stripe",
                 "notifications", "Firebase",
                 "email", "SendGrid",
-                "storage", "AWS S3"
+                "storage", "Base64 in MongoDB",
+                "cache", "In-Memory",
+                "geocoding", "OpenStreetMap"
             )
         ));
     }

@@ -58,13 +58,11 @@ public class LessonService {
         if (updatedLesson.getDescription() != null) {
             existingLesson.setDescription(updatedLesson.getDescription());
         }
-        if (updatedLesson.getPrice() != null) {
-            existingLesson.setPrice(updatedLesson.getPrice());
-        }
-        if (updatedLesson.getDuration() != null) {
-            existingLesson.setDuration(updatedLesson.getDuration());
-        }
-        if (updatedLesson.getLevel() != null) {
+        // Price and duration are primitives, no null check needed
+        existingLesson.setPrice(updatedLesson.getPrice());
+        existingLesson.setDuration(updatedLesson.getDuration());
+        
+        if (updatedLesson.getLevel() > 0) {
             existingLesson.setLevel(updatedLesson.getLevel());
         }
         if (updatedLesson.getLocation() != null) {

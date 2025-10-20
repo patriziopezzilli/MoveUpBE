@@ -160,7 +160,7 @@ public class SportService {
     public List<String> getAllCategories() {
         return sportRepository.findAllCategories()
                 .stream()
-                .map(Sport::getCategory)
+                .map(sport -> sport.getCategory().name())
                 .distinct()
                 .toList();
     }
@@ -182,11 +182,14 @@ public class SportService {
         
         SportStatistics stats = new SportStatistics();
         stats.setPopularity(sport.getPopularity());
-        stats.setCategory(sport.getCategory());
+        stats.setCategory(sport.getCategory().name());
         stats.setDifficultyLevel(sport.getDifficultyLevel());
-        stats.setIsIndoor(sport.getCharacteristics().isIndoor());
-        stats.setIsOutdoor(sport.getCharacteristics().isOutdoor());
-        stats.setIsTeamSport(sport.getCharacteristics().isTeamSport());
+        
+        // Check characteristics from the list
+        List<String> characteristics = sport.getCharacteristics();
+        stats.setIsIndoor(characteristics != null && characteristics.contains("INDOOR"));
+        stats.setIsOutdoor(characteristics != null && characteristics.contains("OUTDOOR"));
+        stats.setIsTeamSport(characteristics != null && characteristics.contains("TEAM"));
         
         // You could add more statistics like:
         // - Number of instructors teaching this sport

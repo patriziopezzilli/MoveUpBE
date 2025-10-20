@@ -91,11 +91,11 @@ public class JwtTokenUtil {
 
     public String refreshToken(String token) {
         final Claims claims = getAllClaimsFromToken(token);
-        claims.setIssuedAt(new Date(System.currentTimeMillis()));
-        claims.setExpiration(new Date(System.currentTimeMillis() + expiration * 1000));
         
         return Jwts.builder()
                 .setClaims(claims)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
     }

@@ -8,6 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -137,7 +141,7 @@ public class BadgeService {
     }
     
     // Check and award badges to user
-    public void checkAndAwardBadges(String userId) {
+    public List<Badge> checkAndAwardBadges(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
         
@@ -147,12 +151,17 @@ public class BadgeService {
         // Get all active badges
         List<Badge> allBadges = badgeRepository.findByIsActiveTrue();
         
+        List<Badge> awardedBadges = new ArrayList<>();
+        
         for (Badge badge : allBadges) {
             // Check if user already has this badge
             if (!user.hasBadge(badge.getId()) && badge.isEligibleForUser(userStats)) {
                 awardBadgeToUser(userId, badge.getId());
+                awardedBadges.add(badge);
             }
         }
+        
+        return awardedBadges;
     }
     
     // Award specific badge to user
@@ -273,6 +282,11 @@ public class BadgeService {
         // - Etc.
         
         return stats;
+    }
+    
+    // Get all badges
+    public List<Badge> getAllBadges() {
+        return badgeRepository.findAll();
     }
     
     // Helper class for badge statistics

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,9 @@ public class WalletService {
     
     @Autowired
     private TransactionRepository transactionRepository;
+    
+    @Value("${app.platform.fee-percentage:0.0}")
+    private double platformFeePercentage;
     
     /**
      * Get or create wallet for user
@@ -251,18 +255,7 @@ public class WalletService {
      * Calculate platform fee based on gross amount
      */
     public Double calculatePlatformFee(Double grossAmount) {
-        // TODO: Make this configurable
-        // For now: 0% fee (promotional period)
-        double feePercentage = 0.0;
-        
-        // Future: could be dynamic based on trainer tier, volume, etc.
-        // if (grossAmount > 100) {
-        //     feePercentage = 10.0; // 10% for high-value lessons
-        // } else {
-        //     feePercentage = 15.0; // 15% standard
-        // }
-        
-        return grossAmount * (feePercentage / 100.0);
+        return grossAmount * platformFeePercentage;
     }
     
     /**

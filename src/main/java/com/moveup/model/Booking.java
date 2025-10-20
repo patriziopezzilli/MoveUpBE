@@ -226,7 +226,7 @@ public static enum PaymentStatus {
 }
 
 // Embedded classes
-static class PaymentInfo {
+public static class PaymentInfo {
     private String stripePaymentIntentId;
     private String stripeChargeId;
     private String refundId;
@@ -253,7 +253,7 @@ static class PaymentInfo {
     public void setProcessingFee(double processingFee) { this.processingFee = processingFee; }
 }
 
-static class CancellationInfo {
+public static class CancellationInfo {
     private String cancelledBy;
     private LocalDateTime cancelledAt;
     private String reason;
@@ -283,7 +283,7 @@ static class CancellationInfo {
 }
 
 // Apple Wallet Pass Info
-static class WalletPassInfo {
+public static class WalletPassInfo {
     private String serialNumber;
     private boolean passAdded;
     private java.util.List<String> deviceTokens = new java.util.ArrayList<>();
@@ -305,7 +305,7 @@ static class WalletPassInfo {
 }
 
 // Live Activity Info
-static class LiveActivityInfo {
+public static class LiveActivityInfo {
     private String activityId;
     private String pushToken;
     private LocalDateTime startedAt;
@@ -331,7 +331,7 @@ static class LiveActivityInfo {
 }
 
 // QR Code Check-in Info
-static class CheckInInfo {
+public static class CheckInInfo {
     private LocalDateTime checkedInAt;
     private boolean scannedQR;
     private GeoLocation location;
@@ -353,7 +353,7 @@ static class CheckInInfo {
 }
 
 // GeoJSON Location
-static class GeoLocation {
+public static class GeoLocation {
     private String type = "Point";
     private double[] coordinates; // [longitude, latitude]
     

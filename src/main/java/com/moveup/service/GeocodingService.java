@@ -133,4 +133,50 @@ public class GeocodingService {
         
         return EARTH_RADIUS * c;
     }
+    
+    /**
+     * Ottiene informazioni complete su una posizione
+     * Se vengono fornite coordinate, fa reverse geocoding
+     * Se viene fornito un indirizzo, fa forward geocoding
+     */
+    public LocationDTO getLocationInfo(String address, Double latitude, Double longitude) {
+        if (latitude != null && longitude != null) {
+            // Reverse geocoding con coordinate
+            return reverseGeocode(latitude, longitude);
+        } else if (address != null && !address.trim().isEmpty()) {
+            // Forward geocoding con indirizzo
+            return forwardGeocode(address);
+        } else {
+            // Nessuna informazione valida fornita
+            LocationDTO fallback = new LocationDTO();
+            fallback.setCity("Posizione sconosciuta");
+            fallback.setSource("UNKNOWN");
+            return fallback;
+        }
+    }
+    
+    /**
+     * Ottiene informazioni su una posizione con fallback intelligente
+     * Prima prova con indirizzo, poi con coordinate se disponibile
+     */
+    public LocationDTO getLocationInfoWithFallback(String address, Double latitude, Double longitude) {
+        // Prima prova con indirizzo se fornito
+        if (address != null && !address.trim().isEmpty()) {
+            LocationDTO result = forwardGeocode(address);
+            if (result != null) {
+                return result;
+            }
+        }
+        
+        // Fallback a coordinate se disponibili
+        if (latitude != null && longitude != null) {
+            return reverseGeocode(latitude, longitude);
+        }
+        
+        // Ultimo fallback
+        LocationDTO fallback = new LocationDTO();
+        fallback.setCity("Posizione sconosciuta");
+        fallback.setSource("UNKNOWN");
+        return fallback;
+    }
 }

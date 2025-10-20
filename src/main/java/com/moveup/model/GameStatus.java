@@ -40,4 +40,16 @@ public class GameStatus {
     
     public List<String> getRedeemedRewards() { return redeemedRewards; }
     public void setRedeemedRewards(List<String> redeemedRewards) { this.redeemedRewards = redeemedRewards; }
+    
+    // Business methods for rewards
+    public void addRedeemedReward(String rewardId) {
+        if (redeemedRewards == null) {
+            redeemedRewards = new ArrayList<>();
+        }
+        redeemedRewards.add(rewardId);
+    }
+    
+    public boolean hasRedeemedReward(String rewardId) {
+        return redeemedRewards != null && redeemedRewards.contains(rewardId);
+    }
 }

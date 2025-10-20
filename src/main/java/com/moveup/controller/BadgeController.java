@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -64,8 +65,6 @@ public class BadgeController {
         List<Badge> newBadges = badgeService.checkAndAwardBadges(userId);
         return ResponseEntity.ok(newBadges);
     }
-    
-    @PutMapping("/{badgeId}")
     public ResponseEntity<Map<String, Object>> updateBadge(@PathVariable String badgeId, @Valid @RequestBody Badge badge) {
         try {
             Badge updatedBadge = badgeService.updateBadge(badgeId, badge);

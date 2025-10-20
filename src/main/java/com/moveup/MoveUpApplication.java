@@ -14,13 +14,14 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
  * 
  * Features:
  * - Autenticazione JWT
- * - Gestione utenti e istruttori  
+ * - Gestione utenti e istruttori
  * - Sistema prenotazioni con pagamenti Stripe
  * - Recensioni bilaterali
  * - Gamification (punti e badge)
  * - Push notifications
- * - File upload S3
- * - Caching Redis
+ * - Upload immagini Base64 (salvate su MongoDB)
+ * - Cache in-memory con refresh automatico
+ * - Geocoding con OpenStreetMap
  * - Monitoring Prometheus
  */
 @SpringBootApplication

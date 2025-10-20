@@ -56,7 +56,7 @@ public class StoryGeneratorService {
             cta,
             generateHashtags(booking.getSport()),
             booking.getScheduledDate().format(DateTimeFormatter.ofPattern("dd MMM yyyy")),
-            user.getLevel(),
+            user.getGameStatus().getLevel(),
             user.getPoints()
         );
     }
@@ -65,7 +65,7 @@ public class StoryGeneratorService {
      * Genera achievement badge basato su milestone
      */
     private String generateBadge(Booking booking, User user, int pointsEarned) {
-        long completedLessons = user.getTotalLessons() != null ? user.getTotalLessons() : 0;
+        long completedLessons = user.getGameStatus() != null ? user.getGameStatus().getTotalLessons() : 0;
         
         // Prima lezione
         if (completedLessons == 1) {

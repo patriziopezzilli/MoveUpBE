@@ -37,7 +37,7 @@ public class User {
     private String lastName;
     
     private String phoneNumber;
-    private String profileImageUrl;
+    private String profileImageBase64; // Immagine profilo salvata come Base64
     
     @NotNull
     private UserType userType;
@@ -48,6 +48,10 @@ public class User {
     private boolean isActive = true;
     private LocalDateTime deactivatedAt;
     private String resetPasswordToken;
+    
+    // First lesson promotion tracking
+    private boolean hasUsedFirstLesson = false;
+    private int freeLessonCredits = 0; // Number of free lessons available
     private LocalDateTime resetPasswordTokenExpiry;
     private int points = 0;
     private List<String> badges = new ArrayList<>();
@@ -63,6 +67,9 @@ public class User {
     private Map<String, SkillLevel> sportSkillLevels = new HashMap<>();
     // Example: {"tennis_id": "INTERMEDIATE", "fitness_id": "BEGINNER"}
     
+    // Premium features
+    private List<String> unlockedPremiumFeatures = new ArrayList<>();
+    
     // Legacy fields - to be deprecated
     @Deprecated
     private List<String> sportsInterests = new ArrayList<>();
@@ -76,8 +83,7 @@ public class User {
     // Instructor-specific fields
     private List<String> certifications = new ArrayList<>();
     private String experience; // Years of experience
-    private Double hourlyRate; // €/hour
-    
+    private Double hourlyRate; // €/
     @CreatedDate
     private LocalDateTime createdAt;
     
@@ -114,8 +120,8 @@ public class User {
     public String getPhoneNumber() { return phoneNumber; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
     
-    public String getProfileImageUrl() { return profileImageUrl; }
-    public void setProfileImageUrl(String profileImageUrl) { this.profileImageUrl = profileImageUrl; }
+    public String getProfileImageBase64() { return profileImageBase64; }
+    public void setProfileImageBase64(String profileImageBase64) { this.profileImageBase64 = profileImageBase64; }
     
     public UserType getUserType() { return userType; }
     public void setUserType(UserType userType) { this.userType = userType; }
@@ -141,6 +147,9 @@ public class User {
     public LocalDateTime getResetPasswordTokenExpiry() { return resetPasswordTokenExpiry; }
     public void setResetPasswordTokenExpiry(LocalDateTime resetPasswordTokenExpiry) { this.resetPasswordTokenExpiry = resetPasswordTokenExpiry; }
     
+    public boolean getHasUsedFirstLesson() { return hasUsedFirstLesson; }
+    public void setHasUsedFirstLesson(boolean hasUsedFirstLesson) { this.hasUsedFirstLesson = hasUsedFirstLesson; }
+    
     public int getPoints() { return points; }
     public void setPoints(int points) { this.points = points; }
     
@@ -153,6 +162,9 @@ public class User {
     
     public LocalDate getBirthDate() { return birthDate; }
     public void setBirthDate(LocalDate birthDate) { this.birthDate = birthDate; }
+    
+    public LocalDate getDateOfBirth() { return birthDate; }
+    public void setDateOfBirth(LocalDate dateOfBirth) { this.birthDate = dateOfBirth; }
     
     public Double getMaxDistance() { return maxDistance; }
     public void setMaxDistance(Double maxDistance) { this.maxDistance = maxDistance; }
@@ -230,6 +242,52 @@ public class User {
         if (gameStatus != null) {
             gameStatus.setExperiencePoints(gameStatus.getExperiencePoints() + experiencePoints);
         }
+    }
+    
+    // Reward redemption methods (delegate to GameStatus)
+    public void addRedeemedReward(String rewardId) {
+        if (gameStatus == null) {
+            gameStatus = new GameStatus();
+        }
+        gameStatus.addRedeemedReward(rewardId);
+    }
+    
+    public boolean hasRedeemedReward(String rewardId) {
+        return gameStatus != null && gameStatus.hasRedeemedReward(rewardId);
+    }
+    
+    // Placeholder methods for reward features (to be implemented)
+    public void addFreeLessonCredit() {
+        this.freeLessonCredits++;
+    }
+    
+    public boolean useFreeLessonCredit() {
+        if (this.freeLessonCredits > 0) {
+            this.freeLessonCredits--;
+            return true;
+        }
+        return false;
+    }
+    
+    public int getFreeLessonCredits() {
+        return this.freeLessonCredits;
+    }
+    
+    public void unlockPremiumFeature(String feature) {
+        if (this.unlockedPremiumFeatures == null) {
+            this.unlockedPremiumFeatures = new ArrayList<>();
+        }
+        if (!this.unlockedPremiumFeatures.contains(feature)) {
+            this.unlockedPremiumFeatures.add(feature);
+        }
+    }
+    
+    public boolean hasPremiumFeature(String feature) {
+        return this.unlockedPremiumFeatures != null && this.unlockedPremiumFeatures.contains(feature);
+    }
+    
+    public List<String> getUnlockedPremiumFeatures() {
+        return this.unlockedPremiumFeatures != null ? this.unlockedPremiumFeatures : new ArrayList<>();
     }
     
     // Convenience methods for location

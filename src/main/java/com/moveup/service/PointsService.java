@@ -42,7 +42,7 @@ public class PointsService {
         List<String> bonuses = new ArrayList<>();
         
         // Bonus prima lezione
-        long completedLessons = bookingRepository.countByUserIdAndStatus(userId, "COMPLETED");
+        long completedLessons = bookingRepository.countByUserIdAndStatus(userId, Booking.BookingStatus.COMPLETED);
         if (completedLessons == 1) {
             points += POINTS_FIRST_LESSON_BONUS;
             bonuses.add("🎉 Bonus prima lezione: +" + POINTS_FIRST_LESSON_BONUS);
@@ -55,7 +55,7 @@ public class PointsService {
         }
         
         // Aggiungi punti all'utente
-        int currentPoints = user.getPoints() != null ? user.getPoints() : 0;
+        int currentPoints = user.getPoints();
         user.setPoints(currentPoints + points);
         userRepository.save(user);
         
@@ -79,7 +79,7 @@ public class PointsService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("Utente non trovato"));
         
-        int currentPoints = user.getPoints() != null ? user.getPoints() : 0;
+        int currentPoints = user.getPoints();
         user.setPoints(currentPoints + POINTS_PER_REVIEW);
         userRepository.save(user);
         
@@ -100,7 +100,7 @@ public class PointsService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("Utente non trovato"));
         
-        int currentPoints = user.getPoints() != null ? user.getPoints() : 0;
+        int currentPoints = user.getPoints();
         user.setPoints(currentPoints + POINTS_REFERRAL);
         userRepository.save(user);
         
@@ -126,7 +126,7 @@ public class PointsService {
             .findFirst()
             .orElseThrow(() -> new RuntimeException("Reward non trovato"));
         
-        int currentPoints = user.getPoints() != null ? user.getPoints() : 0;
+        int currentPoints = user.getPoints();
         
         if (currentPoints < reward.getCost()) {
             throw new RuntimeException("Punti insufficienti. Hai " + currentPoints + " punti, servono " + reward.getCost());
@@ -163,7 +163,7 @@ public class PointsService {
      */
     private boolean checkStreak(String userId, int requiredCount) {
         List<Booking> recentBookings = bookingRepository
-            .findByUserIdAndStatusOrderByCreatedAtDesc(userId, "COMPLETED");
+            .findByUserIdAndStatusOrderByCreatedAtDesc(userId, Booking.BookingStatus.COMPLETED);
         
         if (recentBookings.size() < requiredCount) {
             return false;
@@ -189,11 +189,13 @@ public class PointsService {
      */
     private LevelInfo checkLevelUp(User user) {
         int points = user.getPoints();
-        int oldLevel = user.getLevel() != null ? user.getLevel() : 1;
+        int oldLevel = user.getGameStatus() != null ? user.getGameStatus().getLevel() : 1;
         int newLevel = calculateLevel(points);
         
         if (newLevel > oldLevel) {
-            user.setLevel(newLevel);
+            if (user.getGameStatus() != null) {
+                user.getGameStatus().setLevel(newLevel);
+            }
             userRepository.save(user);
             
             return new LevelInfo(
@@ -245,7 +247,48 @@ public class PointsService {
         };
     }
     
+    /**
+     * Ottieni informazioni sui punti dell'utente
+     */
+    public UserPointsInfo getUserPointsInfo(String userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+        
+        int points = user.getPoints();
+        int level = calculateLevel(points);
+        
+        return new UserPointsInfo(
+            userId,
+            points,
+            level,
+            getLevelName(level),
+            getLevelBadge(level)
+        );
+    }
+    
     // Inner classes
+    public static class UserPointsInfo {
+        private String userId;
+        private int points;
+        private int level;
+        private String levelName;
+        private String levelBadge;
+        
+        public UserPointsInfo(String userId, int points, int level, String levelName, String levelBadge) {
+            this.userId = userId;
+            this.points = points;
+            this.level = level;
+            this.levelName = levelName;
+            this.levelBadge = levelBadge;
+        }
+        
+        public String getUserId() { return userId; }
+        public int getPoints() { return points; }
+        public int getLevel() { return level; }
+        public String getLevelName() { return levelName; }
+        public String getLevelBadge() { return levelBadge; }
+    }
+    
     public static class PointsTransaction {
         private String userId;
         private int pointsAwarded;

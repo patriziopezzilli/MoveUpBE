@@ -4,6 +4,7 @@ import com.moveup.model.Instructor;
 import com.moveup.model.Booking;
 import com.moveup.repository.InstructorRepository;
 import com.moveup.repository.BookingRepository;
+import com.moveup.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,9 @@ public class RankingService {
     @Autowired
     private BookingRepository bookingRepository;
     
+    @Autowired
+    private UserRepository userRepository;
+    
     /**
      * RANKING LOCALE: Top trainer per città
      * Cache settimanale per performance
@@ -28,9 +32,17 @@ public class RankingService {
     @Cacheable(value = "cityRankings", key = "#city + '-' + #sport")
     public List<RankedTrainer> getTopTrainersByCity(String city, String sport, Integer limit) {
         // 1. Trova tutti i trainer della città
-        List<Instructor> instructors = instructorRepository.findAll(); // TODO: Add findByCity method to repository
+        List<Instructor> instructors = instructorRepository.findAll();
         
-        // 2. Filtra per sport se specificato
+        // 2. Filtra per città
+        if (city != null && !city.isEmpty()) {
+            instructors = instructors.stream()
+                .filter(instructor -> instructor.getAddress() != null && 
+                                    instructor.getAddress().toLowerCase().contains(city.toLowerCase()))
+                .collect(Collectors.toList());
+        }
+        
+        // 3. Filtra per sport se specificato
         if (sport != null && !sport.isEmpty()) {
             instructors = instructors.stream()
                 .filter(instructor -> instructor.getSpecializations() != null && 
@@ -117,71 +129,56 @@ public class RankingService {
      * Rising stars: trainer in crescita
      */
     public List<RankedTrainer> getRisingStars(String city, Integer limit) {
-        // TODO: Implement proper rising stars logic with booking queries
-        // For now, return empty list or use existing totalLessons as metric
-        List<Instructor> instructors = instructorRepository.findAll();
-        
-        // Simple implementation: sort by recent growth indicator (totalLessons for now)
-        List<RankedTrainer> risingStars = instructors.stream()
-            .filter(instructor -> instructor.getTotalLessons() > 0)
-            .map(instructor -> {
-                RankingScore score = calculateRankingScore(instructor);
-                return new RankedTrainer(instructor, score, "RISING_STAR");
-            })
-            .sorted(Comparator.comparing(RankedTrainer::getTotalScore).reversed())
-            .limit(limit != null ? limit : 10)
-            .collect(Collectors.toList());
-        
-        return risingStars;
-        
-        /* TODO: Implement with proper booking queries
         LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
         LocalDateTime sixtyDaysAgo = LocalDateTime.now().minusDays(60);
-        
+
         List<Instructor> instructors = instructorRepository.findAll();
-        
+
+        // Filter by city if specified
+        if (city != null && !city.trim().isEmpty()) {
+            instructors = instructors.stream()
+                .filter(instructor -> instructor.getAddress() != null &&
+                                    instructor.getAddress().toLowerCase().contains(city.toLowerCase()))
+                .collect(Collectors.toList());
+        }
+
         List<RankedTrainer> risingStars = new ArrayList<>();
-        
+
         for (Instructor instructor : instructors) {
-            // Lezioni ultimo mese
+            // Count lessons in last 30 days
             long recentLessons = bookingRepository.findByInstructorIdAndCreatedAtAfter(
                 instructor.getId(), thirtyDaysAgo
             ).size();
-            
-            // Lezioni mese precedente
+
+            // Count lessons in previous 30 days (31-60 days ago)
             long previousLessons = bookingRepository.findByInstructorIdAndCreatedAtBetween(
                 instructor.getId(), sixtyDaysAgo, thirtyDaysAgo
             ).size();
-            
-            // Calcola crescita percentuale
-            double growthRate = previousLessons > 0 
+
+            // Calculate growth rate
+            double growthRate = previousLessons > 0
                 ? ((double) (recentLessons - previousLessons) / previousLessons) * 100
                 : (recentLessons > 0 ? 100 : 0);
-            
-            if (growthRate > 20) { // Almeno 20% di crescita
+
+            // Include instructors with significant growth (>20%) or new instructors with recent activity
+            if (growthRate > 20 || (previousLessons == 0 && recentLessons >= 3)) {
                 RankingScore score = calculateRankingScore(instructor);
                 RankedTrainer ranked = new RankedTrainer(
-                    instructor, 
-                    score, 
-                    "🚀 Rising Star"
+                    instructor,
+                    score,
+                    "RISING_STAR"
                 );
                 ranked.setGrowthRate(growthRate);
                 risingStars.add(ranked);
             }
         }
-        
-        // Ordina per crescita
-        risingStars.sort(Comparator
-            .comparing(RankedTrainer::getGrowthRate)
-            .reversed()
-        );
-        
-        if (limit != null && risingStars.size() > limit) {
-            risingStars = risingStars.subList(0, limit);
-        }
-        
-        return risingStars;
-        */
+
+        // Sort by growth rate and total score, limit results
+        return risingStars.stream()
+            .sorted(Comparator.comparing(RankedTrainer::getGrowthRate).reversed()
+                .thenComparing(RankedTrainer::getTotalScore).reversed())
+            .limit(limit != null ? limit : 10)
+            .collect(Collectors.toList());
     }
     
     /**
@@ -203,8 +200,16 @@ public class RankingService {
         double ratingScore = averageRating * 20;
         double reviewsScore = reviewCount * 5;
         
-        // Bonus per trainer verificati (check on User entity, not Instructor)
-        double verifiedBonus = 0; // TODO: Check User entity for verification status
+                // Bonus per trainer verificati
+        double verifiedBonus = 0;
+        try {
+            Optional<com.moveup.model.User> userOpt = userRepository.findById(instructor.getUserId());
+            if (userOpt.isPresent() && userOpt.get().isVerified()) {
+                verifiedBonus = 50;
+            }
+        } catch (Exception e) {
+            // Ignore errors in bonus calculation
+        }
         
         // Bonus per trainer con molte discipline
         double versatilityBonus = instructor.getSpecializations().size() * 10;
@@ -265,13 +270,7 @@ public class RankingService {
         private double lessonsScore;
         private double ratingScore;
         private double reviewsScore;
-        private double verifiedBonus;
-        private double versatilityBonus;
-        private double totalScore;
-        
-        public RankingScore(double lessonsScore, double ratingScore, double reviewsScore, 
-                          double verifiedBonus, double versatilityBonus, double totalScore) {
-            this.lessonsScore = lessonsScore;
+        private double verifiedBonus
             this.ratingScore = ratingScore;
             this.reviewsScore = reviewsScore;
             this.verifiedBonus = verifiedBonus;

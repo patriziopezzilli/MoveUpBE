@@ -37,7 +37,7 @@ public class Reward {
     @Min(0)
     private int remainingQuantity = -1; // -1 = unlimited
     
-    private String imageUrl;
+    private String imageBase64; // Immagine reward salvata come Base64
     private RewardValue value = new RewardValue();
     private RewardTerms terms = new RewardTerms();
     
@@ -85,8 +85,8 @@ public class Reward {
     public int getRemainingQuantity() { return remainingQuantity; }
     public void setRemainingQuantity(int remainingQuantity) { this.remainingQuantity = remainingQuantity; }
     
-    public String getImageUrl() { return imageUrl; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public String getImageBase64() { return imageBase64; }
+    public void setImageBase64(String imageBase64) { this.imageBase64 = imageBase64; }
     
     public RewardValue getValue() { return value; }
     public void setValue(RewardValue value) { this.value = value; }
@@ -130,26 +130,6 @@ public class Reward {
     }
 }
 
-enum RewardType {
-    DISCOUNT("Sconto"),
-    FREE_LESSON("Lezione Gratuita"),
-    CASH_REWARD("Ricompensa in Denaro"),
-    PREMIUM_FEATURE("Funzione Premium"),
-    MERCHANDISE("Merchandising"),
-    EXPERIENCE("Esperienza"),
-    SPECIAL_ACCESS("Accesso Speciale");
-    
-    private final String displayName;
-    
-    RewardType(String displayName) {
-        this.displayName = displayName;
-    }
-    
-    public String getDisplayName() {
-        return displayName;
-    }
-}
-
 // Embedded classes
 class RewardValue {
     private double discountPercentage;
@@ -176,40 +156,4 @@ class RewardValue {
     
     public String getExperienceDetails() { return experienceDetails; }
     public void setExperienceDetails(String experienceDetails) { this.experienceDetails = experienceDetails; }
-}
-
-class RewardTerms {
-    private LocalDateTime expirationDate;
-    private int maxUsesPerUser = 1;
-    private String applicableToSports;
-    private double minOrderAmount;
-    private String specialConditions;
-    
-    // Constructors
-    public RewardTerms() {}
-    
-    // Getters and Setters
-    public LocalDateTime getExpirationDate() { return expirationDate; }
-    public void setExpirationDate(LocalDateTime expirationDate) { this.expirationDate = expirationDate; }
-    
-    public int getMaxUsesPerUser() { return maxUsesPerUser; }
-    public void setMaxUsesPerUser(int maxUsesPerUser) { this.maxUsesPerUser = maxUsesPerUser; }
-    
-    public String getApplicableToSports() { return applicableToSports; }
-    public void setApplicableToSports(String applicableToSports) { this.applicableToSports = applicableToSports; }
-    
-    public double getMinOrderAmount() { return minOrderAmount; }
-    public void setMinOrderAmount(double minOrderAmount) { this.minOrderAmount = minOrderAmount; }
-    
-    public String getSpecialConditions() { return specialConditions; }
-    public void setSpecialConditions(String specialConditions) { this.specialConditions = specialConditions; }
-    
-    // Business methods
-    public boolean isExpired() {
-        return expirationDate != null && LocalDateTime.now().isAfter(expirationDate);
-    }
-    
-    public boolean isValidForAmount(double amount) {
-        return amount >= minOrderAmount;
-    }
 }
