@@ -17,14 +17,14 @@ import java.util.function.Function;
 @Component
 public class JwtTokenUtil {
 
-        @Value("${app.jwt.secret:moveupSecretKeyForJWTTokenGenerationAndValidation2024}")
+    @Value("${app.jwt.secret:moveupSecretKeyForJWTTokenGenerationAndValidation2024}")
     private String jwtSecret;
 
     @Value("${jwt.expiration:86400}")
     private Long expiration; // 24 hours in seconds
 
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes());
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
     public String getUsernameFromToken(String token) {
