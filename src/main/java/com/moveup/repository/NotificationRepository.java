@@ -15,9 +15,11 @@ public interface NotificationRepository extends MongoRepository<Notification, St
     List<Notification> findByRecipientId(String recipientId);
     
     // Find unread notifications by recipient
+    @Query("{'recipientId': ?0, 'isRead': false}")
     List<Notification> findByRecipientIdAndIsReadFalse(String recipientId);
     
     // Find read notifications by recipient
+    @Query("{'recipientId': ?0, 'isRead': true}")
     List<Notification> findByRecipientIdAndIsReadTrue(String recipientId);
     
     // Find notifications by type

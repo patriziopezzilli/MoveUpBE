@@ -51,6 +51,7 @@ public interface UserRepository extends MongoRepository<User, String> {
     List<User> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
     
     // Find users by level
+    @Query("{'gameStatus.level': ?0}")
     List<User> findByGameStatusLevel(int level);
     
     // Find users with points greater than
@@ -58,9 +59,11 @@ public interface UserRepository extends MongoRepository<User, String> {
     List<User> findByTotalPointsGreaterThanEqual(int points);
     
     // Count total users
+    @Query(value = "{'isActive': true}", count = true)
     long countByIsActiveTrue();
     
     // Count verified users
+    @Query(value = "{'isVerified': true}", count = true)
     long countByIsVerifiedTrue();
     
     // Search users by name (case insensitive)

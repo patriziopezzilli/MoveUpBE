@@ -54,7 +54,8 @@ public interface LessonRepository extends MongoRepository<Lesson, String> {
     // Find lessons by instructor and sport
     List<Lesson> findByInstructorIdAndSportId(String instructorId, String sportId);
     
-    // Find lessons by instructor and active status
+    // Find active lessons by instructor
+    @Query("{'instructorId': ?0, 'isActive': true}")
     List<Lesson> findByInstructorIdAndIsActiveTrue(String instructorId);
     
     // Find lessons by sport and level
