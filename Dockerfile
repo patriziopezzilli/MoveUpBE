@@ -1,5 +1,8 @@
-# Use Maven with OpenJDK 17 for building
-FROM maven:3.9-openjdk-17 AS build
+# Use Eclipse Temurin JDK 17 for building (includes Maven)
+FROM eclipse-temurin:17-jdk AS build
+
+# Install Maven if not included
+RUN apt-get update && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
