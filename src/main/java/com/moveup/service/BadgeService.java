@@ -248,7 +248,7 @@ public class BadgeService {
         BadgeStatistics stats = new BadgeStatistics();
         stats.setBadgeId(badgeId);
         stats.setTitle(badge.getTitle());
-        stats.setType(badge.getType().name());
+        stats.setType(badge.getType());
         stats.setCategory(badge.getCategory().name());
         stats.setRarity(badge.getRarity().name());
         stats.setPointsValue(badge.getPointsValue());

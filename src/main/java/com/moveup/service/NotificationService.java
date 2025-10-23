@@ -197,7 +197,7 @@ public class NotificationService {
         notification.setRecipientId(recipientId);
         notification.setTitle(title);
         notification.setMessage(message);
-        notification.setType(NotificationType.valueOf(type));
+        notification.setType(type);
         notification.setScheduledFor(scheduledFor);
         
         return notificationRepository.save(notification);
@@ -266,7 +266,7 @@ public class NotificationService {
         notification.setRecipientId(instructorId);
         notification.setTitle("Check-in Effettuato");
         notification.setMessage("Il cliente ha effettuato il check-in tramite QR code");
-        notification.setType(NotificationType.BOOKING_CONFIRMATION);
+        notification.setType("BOOKING_CONFIRMATION");
         notification.setRelatedEntityId(bookingId);
         notification.setRelatedEntityType("BOOKING");
         notification.setPriority(NotificationPriority.HIGH);

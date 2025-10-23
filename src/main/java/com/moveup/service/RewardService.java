@@ -245,7 +245,7 @@ public class RewardService {
         RewardStatistics stats = new RewardStatistics();
         stats.setRewardId(rewardId);
         stats.setTitle(reward.getTitle());
-        stats.setType(reward.getType().name());
+        stats.setType(reward.getType());
         stats.setPointsCost(reward.getPointsCost());
         stats.setTotalQuantity(reward.getQuantity());
         stats.setRemainingQuantity(reward.getRemainingQuantity());
@@ -285,32 +285,32 @@ public class RewardService {
         // Process reward based on type
         try {
             switch (reward.getType()) {
-                case FREE_LESSON:
+                case "FREE_LESSON":
                     user.addFreeLessonCredit();
                     break;
-                case DISCOUNT:
+                case "DISCOUNT":
                     // Could add discount credit to user account
                     user.addFreeLessonCredit(); // Placeholder - use discount for now
                     break;
-                case CASH_REWARD:
+                case "CASH_REWARD":
                     // Could add cash credit to wallet
                     user.addFreeLessonCredit(); // Placeholder - use lesson credit for now
                     break;
-                case PREMIUM_FEATURE:
+                case "PREMIUM_FEATURE":
                     // Could unlock premium features
                     user.addFreeLessonCredit(); // Placeholder - use lesson credit for now
                     break;
-                case MERCHANDISE:
+                case "MERCHANDISE":
                     // Could add merchandise credit
                     user.addFreeLessonCredit(); // Placeholder - use lesson credit for now
                     break;
-                case EXPERIENCE:
+                case "EXPERIENCE":
                     // Could add experience points
                     if (user.getGameStatus() != null) {
                         user.getGameStatus().setTotalPoints(user.getGameStatus().getTotalPoints() + 100);
                     }
                     break;
-                case SPECIAL_ACCESS:
+                case "SPECIAL_ACCESS":
                     // Could grant special access
                     user.addFreeLessonCredit(); // Placeholder - use lesson credit for now
                     break;
