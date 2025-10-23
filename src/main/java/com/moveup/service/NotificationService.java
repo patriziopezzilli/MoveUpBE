@@ -1,7 +1,6 @@
 package com.moveup.service;
 
 import com.moveup.model.Notification;
-import com.moveup.model.NotificationType;
 import com.moveup.model.NotificationPriority;
 import com.moveup.model.User;
 import com.moveup.repository.NotificationRepository;
@@ -24,7 +23,7 @@ public class NotificationService {
     // Create notification
     public Notification createNotification(String recipientId, String title, String message, String type) {
         Notification notification = new Notification(recipientId, title, message, 
-            NotificationType.valueOf(type));
+            type);
         return notificationRepository.save(notification);
     }
     
@@ -68,7 +67,7 @@ public class NotificationService {
         notification.setRecipientId(userId);
         notification.setTitle("Prenotazione Confermata");
         notification.setMessage("La tua prenotazione è stata confermata con successo!");
-        notification.setType(NotificationType.BOOKING_CONFIRMATION);
+        notification.setType("BOOKING_CONFIRMATION");
         notification.setRelatedEntityId(bookingId);
         notification.setRelatedEntityType("BOOKING");
         
@@ -81,7 +80,7 @@ public class NotificationService {
         notification.setRecipientId(userId);
         notification.setTitle("Promemoria Lezione");
         notification.setMessage("Non dimenticare la tua lezione oggi alle " + lessonTime.toLocalTime());
-        notification.setType(NotificationType.BOOKING_REMINDER);
+        notification.setType("BOOKING_REMINDER");
         notification.setRelatedEntityId(bookingId);
         notification.setRelatedEntityType("BOOKING");
         notification.setPriority(NotificationPriority.HIGH);
@@ -95,7 +94,7 @@ public class NotificationService {
         notification.setRecipientId(userId);
         notification.setTitle("Prenotazione Cancellata");
         notification.setMessage("La tua prenotazione è stata cancellata.");
-        notification.setType(NotificationType.BOOKING_CANCELLED);
+        notification.setType("BOOKING_CANCELLED");
         notification.setRelatedEntityId(bookingId);
         notification.setRelatedEntityType("BOOKING");
         
@@ -107,8 +106,8 @@ public class NotificationService {
         Notification notification = new Notification();
         notification.setRecipientId(user.getId());
         notification.setTitle("Benvenuto in MoveUp!");
-        notification.setMessage("Grazie per esserti registrato! Inizia il tuo viaggio sportivo prenotando la tua prima lezione.");
-        notification.setType(NotificationType.WELCOME);
+        notification.setMessage("Grazie per esserti registrato. Iniziamo il tuo viaggio sportivo!");
+        notification.setType("WELCOME");
         notification.setPriority(NotificationPriority.HIGH);
         
         notificationRepository.save(notification);
@@ -119,8 +118,8 @@ public class NotificationService {
         Notification notification = new Notification();
         notification.setRecipientId(instructorId);
         notification.setTitle("Nuova Recensione");
-        notification.setMessage("Hai ricevuto una nuova recensione con " + rating + " stelle!");
-        notification.setType(NotificationType.NEW_REVIEW);
+        notification.setMessage("Hai ricevuto una nuova recensione per la tua lezione.");
+        notification.setType("NEW_REVIEW");
         notification.setRelatedEntityId(reviewId);
         notification.setRelatedEntityType("REVIEW");
         
@@ -131,9 +130,9 @@ public class NotificationService {
     public void sendPaymentSuccessNotification(String userId, String bookingId, double amount) {
         Notification notification = new Notification();
         notification.setRecipientId(userId);
-        notification.setTitle("Pagamento Completato");
-        notification.setMessage(String.format("Pagamento di €%.2f completato con successo!", amount));
-        notification.setType(NotificationType.PAYMENT_SUCCESS);
+        notification.setTitle("Pagamento Riuscito");
+        notification.setMessage("Il pagamento per la tua prenotazione è stato elaborato con successo.");
+        notification.setType("PAYMENT_SUCCESS");
         notification.setRelatedEntityId(bookingId);
         notification.setRelatedEntityType("BOOKING");
         
@@ -145,8 +144,8 @@ public class NotificationService {
         Notification notification = new Notification();
         notification.setRecipientId(userId);
         notification.setTitle("Pagamento Fallito");
-        notification.setMessage("Il pagamento non è andato a buon fine. Riprova o contatta il supporto.");
-        notification.setType(NotificationType.PAYMENT_FAILED);
+        notification.setMessage("Il pagamento per la tua prenotazione non è riuscito. Riprova o contatta il supporto.");
+        notification.setType("PAYMENT_FAILED");
         notification.setRelatedEntityId(bookingId);
         notification.setRelatedEntityType("BOOKING");
         notification.setPriority(NotificationPriority.HIGH);
@@ -158,9 +157,9 @@ public class NotificationService {
     public void sendBadgeEarnedNotification(String userId, String badgeId, String badgeTitle) {
         Notification notification = new Notification();
         notification.setRecipientId(userId);
-        notification.setTitle("Badge Ottenuto!");
-        notification.setMessage("Complimenti! Hai ottenuto il badge: " + badgeTitle);
-        notification.setType(NotificationType.BADGE_EARNED);
+        notification.setTitle("Badge Consegnato!");
+        notification.setMessage("Hai guadagnato un nuovo badge: " + badgeTitle);
+        notification.setType("BADGE_EARNED");
         notification.setRelatedEntityId(badgeId);
         notification.setRelatedEntityType("BADGE");
         
@@ -172,8 +171,8 @@ public class NotificationService {
         Notification notification = new Notification();
         notification.setRecipientId(userId);
         notification.setTitle("Ricompensa Disponibile");
-        notification.setMessage("Hai abbastanza punti per riscattare: " + rewardTitle);
-        notification.setType(NotificationType.REWARD_AVAILABLE);
+        notification.setMessage("Hai una nuova ricompensa disponibile da riscattare!");
+        notification.setType("REWARD_AVAILABLE");
         notification.setRelatedEntityId(rewardId);
         notification.setRelatedEntityType("REWARD");
         
@@ -186,7 +185,7 @@ public class NotificationService {
         notification.setRecipientId(user.getId());
         notification.setTitle("Punti Guadagnati!");
         notification.setMessage(String.format("Hai guadagnato %d punti per: %s", points, reason));
-        notification.setType(NotificationType.SYSTEM_UPDATE);
+        notification.setType("SYSTEM_UPDATE");
         
         notificationRepository.save(notification);
     }
