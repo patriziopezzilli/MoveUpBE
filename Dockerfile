@@ -13,8 +13,8 @@ COPY src ./src
 # Build the application
 RUN mvn clean package -DskipTests
 
-# Use OpenJDK 17 JRE for runtime
-FROM openjdk:17-jre-slim
+# Use OpenJDK 17 JRE for runtime (Eclipse Temurin is more stable)
+FROM eclipse-temurin:17-jre
 
 # Set working directory
 WORKDIR /app
