@@ -1,5 +1,5 @@
 # Use Maven with OpenJDK 17 for building
-FROM maven:3.9.4-openjdk-17 AS build
+FROM maven:3.9-openjdk-17 AS build
 
 # Set working directory
 WORKDIR /app
