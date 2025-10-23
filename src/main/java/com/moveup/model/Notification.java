@@ -29,7 +29,7 @@ public class Notification {
     private String message;
     
     @NotNull
-    private NotificationType type;
+    private String type;
     
     @NotNull
     private NotificationPriority priority = NotificationPriority.MEDIUM;
@@ -55,7 +55,7 @@ public class Notification {
     // Constructors
     public Notification() {}
     
-    public Notification(String recipientId, String title, String message, NotificationType type) {
+    public Notification(String recipientId, String title, String message, String type) {
         this.recipientId = recipientId;
         this.title = title;
         this.message = message;
@@ -75,8 +75,8 @@ public class Notification {
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
     
-    public NotificationType getType() { return type; }
-    public void setType(NotificationType type) { this.type = type; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
     
     public NotificationPriority getPriority() { return priority; }
     public void setPriority(NotificationPriority priority) { this.priority = priority; }

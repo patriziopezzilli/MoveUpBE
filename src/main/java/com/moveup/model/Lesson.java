@@ -47,6 +47,8 @@ public class Lesson {
     @NotNull
     private SkillLevel skillLevel;
     
+    private String type;
+    
     private List<String> equipment = new ArrayList<>();
     private List<String> tags = new ArrayList<>();
     private boolean isActive = true;
@@ -117,6 +119,9 @@ public class Lesson {
             this.skillLevel = SkillLevel.values()[level - 1];
         }
     }
+    
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
     
     public List<String> getEquipment() { return equipment; }
     public void setEquipment(List<String> equipment) { this.equipment = equipment; }

@@ -25,7 +25,7 @@ public class Reward {
     private String description;
     
     @NotNull
-    private RewardType type;
+    private String type;
     
     @NotNull
     @Min(1)
@@ -56,7 +56,7 @@ public class Reward {
     // Constructors
     public Reward() {}
     
-    public Reward(String title, String description, RewardType type, int pointsCost) {
+    public Reward(String title, String description, String type, int pointsCost) {
         this.title = title;
         this.description = description;
         this.type = type;
@@ -73,8 +73,8 @@ public class Reward {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
     
-    public RewardType getType() { return type; }
-    public void setType(RewardType type) { this.type = type; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
     
     public int getPointsCost() { return pointsCost; }
     public void setPointsCost(int pointsCost) { this.pointsCost = pointsCost; }
@@ -122,11 +122,11 @@ public class Reward {
     }
     
     public double getDiscountPercentage() {
-        return type == RewardType.DISCOUNT ? value.getDiscountPercentage() : 0;
+        return "DISCOUNT".equals(type) ? value.getDiscountPercentage() : 0;
     }
     
     public double getCashValue() {
-        return type == RewardType.CASH_REWARD ? value.getCashAmount() : 0;
+        return "CASH_REWARD".equals(type) ? value.getCashAmount() : 0;
     }
 }
 

@@ -24,7 +24,7 @@ public class Badge {
     private String description;
     
     @NotNull
-    private BadgeType type;
+    private String type;
     
     @NotNull
     private BadgeCategory category;
@@ -46,7 +46,7 @@ public class Badge {
     // Constructors
     public Badge() {}
     
-    public Badge(String title, String description, BadgeType type, BadgeCategory category) {
+    public Badge(String title, String description, String type, BadgeCategory category) {
         this.title = title;
         this.description = description;
         this.type = type;
@@ -63,8 +63,8 @@ public class Badge {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
     
-    public BadgeType getType() { return type; }
-    public void setType(BadgeType type) { this.type = type; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
     
     public BadgeCategory getCategory() { return category; }
     public void setCategory(BadgeCategory category) { this.category = category; }

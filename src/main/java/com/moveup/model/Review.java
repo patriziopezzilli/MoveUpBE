@@ -40,7 +40,7 @@ public class Review {
     private String comment;
     
     @NotNull
-    private ReviewType type = ReviewType.USER_TO_INSTRUCTOR;
+    private String type = "USER_TO_INSTRUCTOR";
     
     private ReviewDetails details = new ReviewDetails();
     private ReviewResponse response;
@@ -81,8 +81,8 @@ public class Review {
     public String getComment() { return comment; }
     public void setComment(String comment) { this.comment = comment; }
     
-    public ReviewType getType() { return type; }
-    public void setType(ReviewType type) { this.type = type; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
     
     public ReviewDetails getDetails() { return details; }
     public void setDetails(ReviewDetails details) { this.details = details; }
